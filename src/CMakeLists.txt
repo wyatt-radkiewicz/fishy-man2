@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.25.0)
+project(fishy-man2 VERSION 0.1)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED True)
+set(SOURCES main.c)
+add_executable(fishy-man2 "${SOURCES}")
+find_package(raylib CONFIG REQUIRED)
+target_link_libraries(fishy-man2 PRIVATE raylib)
