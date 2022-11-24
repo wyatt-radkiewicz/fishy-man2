@@ -4,7 +4,19 @@
 
 #include "cLDtk.h"
 
-#define MAX_COLLISION_TILES 16
+#define TILE_PADDING 0.1f
+#define TILE_PADDING2 0.2f
+#define MAX_TILE_COLLISIONS 16
+#define IS_SOLID 1
+#define ROUND_TOPLEFT 2
+#define ROUND_TOPRIGHT 4
+#define ROUND_BOTTOMLEFT 8
+#define ROUND_BOTTOMRIGHT 16
+
+typedef struct TileCollision {
+    Rectangle bounds;
+    int col_type;
+} TileCollision;
 
 extern int last_level_id, current_level_uid, transition_level_uid;
 extern struct levels *current_level, *transition_level;
@@ -18,6 +30,6 @@ void world_start_transition(int levelUid);
 void world_end_transition(void);
 void world_spawn_entities_for_current_level(void);
 void world_despawn_entities_for_last_level(void);
-void world_get_colliding_tiles(Rectangle rects[MAX_COLLISION_TILES], float x, float y, float r);
+void world_get_colliding_tiles(TileCollision collisions[MAX_TILE_COLLISIONS], float x, float y, float r);
 
 #endif

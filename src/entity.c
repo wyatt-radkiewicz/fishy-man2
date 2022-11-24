@@ -126,32 +126,58 @@ static void entity_process_physics(Entity *entity, float delta) {
     }
 
     float radius = entity->radius * entity->scale;
-    Rectangle rects[MAX_COLLISION_TILES];
-    world_get_colliding_tiles(rects, entity->position.x, entity->position.y, radius);
-    for (Rectangle *rect = rects; rect->width > 0.0f; rect += 1) {
+    TileCollision collisions[MAX_TILE_COLLISIONS];
+    world_get_colliding_tiles(collisions, entity->position.x, entity->position.y, radius);
+    for (TileCollision *col = collisions; col->col_type; col += 1) {
+        Rectangle *rect = &col->bounds;
         float left_margin = entity->position.x - (rect->x - radius);
         float right_margin = (rect->x + rect->width + radius) - entity->position.x;
         float top_margin = entity->position.y - (rect->y - radius);
         float bottom_margin = (rect->y + rect->height + radius) - entity->position.y;
-        if (left_margin < right_margin && left_margin < top_margin && left_margin < bottom_margin) {
-            entity->position.x = rect->x - radius;
-            if (entity->velocity.x > 0.0f && left_margin > 0.0f) {
-                entity->velocity.x = 0.0f;
-            }
-        } else if (right_margin < left_margin && right_margin < top_margin && right_margin < bottom_margin) {
-            entity->position.x = rect->x + rect->width + radius;
-            if (entity->velocity.x < 0.0f && right_margin > 0.0f) {
-                entity->velocity.x = 0.0f;
-            }
-        } else if (top_margin < left_margin && top_margin < right_margin && top_margin < bottom_margin) {
-            entity->position.y = rect->y - radius;
-            if (entity->velocity.y > 0.0f) {
-                entity->velocity.y = 0.0f;
-            }
-        } else if (bottom_margin < left_margin && bottom_margin < top_margin && bottom_margin < top_margin) {
-            entity->position.y = rect->y + rect->height + radius;
-            if (entity->velocity.y < 0.0f) {
-                entity->velocity.y = 0.0f;
+
+#define ROUND_RAD 8.05f
+#define R (2.0f * (radius + TILE_PADDING))
+        if (col->col_type & ROUND_TOPLEFT && right_margin > R && bottom_margin > R) {
+            entity->position = Vector2Add(
+                Vector2Scale(Vector2Normalize((Vector2){ .x = -right_margin + R, .y = -bottom_margin + R }), ROUND_RAD),
+                (Vector2){ .x = rect->x + rect->width - radius - 2.0f * TILE_PADDING, .y = rect->y + rect->height - radius - 2.0f * TILE_PADDING }
+            );
+        } else if (col->col_type & ROUND_TOPRIGHT && left_margin > R && bottom_margin > R) {
+            entity->position = Vector2Add(
+                Vector2Scale(Vector2Normalize((Vector2){ .x = left_margin - R, .y = -bottom_margin + R }), ROUND_RAD),
+                (Vector2){ .x = rect->x + radius + 2.0f * TILE_PADDING, .y = rect->y + rect->height - radius - 2.0f * TILE_PADDING }
+            );
+        } else if (col->col_type & ROUND_BOTTOMLEFT && right_margin > R && top_margin > R) {
+            entity->position = Vector2Add(
+                Vector2Scale(Vector2Normalize((Vector2){ .x = -right_margin + R, .y = top_margin - R }), ROUND_RAD),
+                (Vector2){ .x = rect->x + rect->width - radius - 2.0f * TILE_PADDING, .y = rect->y + radius + 2.0f * TILE_PADDING }
+            );
+        } else if (col->col_type & ROUND_BOTTOMRIGHT && left_margin > R && top_margin > R) {
+            entity->position = Vector2Add(
+                Vector2Scale(Vector2Normalize((Vector2){ .x = left_margin - R, .y = top_margin - R }), ROUND_RAD),
+                (Vector2){ .x = rect->x + radius + 2.0f * TILE_PADDING, .y = rect->y + radius + 2.0f * TILE_PADDING }
+            );
+        } else {
+            if (left_margin < right_margin && left_margin < top_margin && left_margin < bottom_margin) {
+                entity->position.x = rect->x - radius;
+                if (entity->velocity.x > 0.0f && left_margin > 0.0f) {
+                    entity->velocity.x = 0.0f;
+                }
+            } else if (right_margin < left_margin && right_margin < top_margin && right_margin < bottom_margin) {
+                entity->position.x = rect->x + rect->width + radius;
+                if (entity->velocity.x < 0.0f && right_margin > 0.0f) {
+                    entity->velocity.x = 0.0f;
+                }
+            } else if (top_margin < left_margin && top_margin < right_margin && top_margin < bottom_margin) {
+                entity->position.y = rect->y - radius;
+                if (entity->velocity.y > 0.0f) {
+                    entity->velocity.y = 0.0f;
+                }
+            } else if (bottom_margin < left_margin && bottom_margin < top_margin && bottom_margin < top_margin) {
+                entity->position.y = rect->y + rect->height + radius;
+                if (entity->velocity.y < 0.0f) {
+                    entity->velocity.y = 0.0f;
+                }
             }
         }
     }

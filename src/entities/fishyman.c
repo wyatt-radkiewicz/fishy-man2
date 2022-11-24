@@ -73,7 +73,7 @@ void fishyman_update(Entity *entity, float delta) {
         );
     }
 
-    camera.position = Vector2Add(camera.position, Vector2Scale(Vector2Subtract(entity->position, camera.position), 0.8f));
+    camera.position = Vector2Add(camera.position, Vector2Scale(Vector2Subtract(entity->position, camera.position), 0.5f));
 
     // Clip the camera bounds
     if (camera.position.x - camera.dimen.x * camera.scale / 2.0f < (float)current_level->worldX) {

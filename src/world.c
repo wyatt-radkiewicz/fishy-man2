@@ -12,12 +12,16 @@ struct levels *current_level, *transition_level;
 bool in_transition = false;
 struct layerInstances *current_intGrid;
 
+static int *collisions = NULL;
+
 static float next_floor_anim = 3.0f;
 static float next_rock_anim = 6.0f;
 static int floor_anim_frame = 0;
 static int rock_anim_frame = 0;
 
 static void draw_autolayer(struct layerInstances *layer, float offset_x, float offset_y);
+static void free_collisions(void);
+static void build_collisions(void);
 
 void world_setup(void) {
     loadJSONFile("{\"jsonVersion\":\"1.1.3\"}","res/world.ldtk");
@@ -27,6 +31,7 @@ void world_setup(void) {
     world_end_transition();
 }
 void world_free(void) {
+    free_collisions();
     freeMapData();
     json_value_free(schema);
     json_value_free(user_data);
@@ -59,6 +64,8 @@ void world_end_transition(void) {
     current_level_uid = transition_level_uid;
     current_level = transition_level;
     current_intGrid = getLayer("Collisions", current_level_uid);
+    free_collisions();
+    build_collisions();
     transition_level = NULL;
     transition_level_uid = 0;
 }
@@ -130,20 +137,51 @@ void world_despawn_entities_for_last_level(void) {
         }
     }
 }
-static Rectangle world_get_bound_from_grid(int px, int py) {
+
+static void free_collisions(void) {
+    free(collisions);
+}
+static void build_collisions(void) {
+    collisions = calloc(current_intGrid->cWid * current_intGrid->cHei, sizeof(int));
+
+    for (int y = 0; y < current_intGrid->cHei; y++) {
+        for (int x = 0; x < current_intGrid->cWid; x++) {
+            int *col = &collisions[y * current_intGrid->cWid + x];
+            *col = current_intGrid->intGrid[y * current_intGrid->cWid + x] ? IS_SOLID : 0;
+
+            // Check neighbors
+            if (*col) {
+                bool left = x > 0 ? current_intGrid->intGrid[y * current_intGrid->cWid + (x - 1)] : true;
+                bool right = x < current_intGrid->cWid - 1 ? current_intGrid->intGrid[y * current_intGrid->cWid + (x + 1)] : true;
+                bool top = y > 0 ? current_intGrid->intGrid[(y - 1) * current_intGrid->cWid + x] : true;
+                bool bottom = y < current_intGrid->cHei - 1 ? current_intGrid->intGrid[(y + 1) * current_intGrid->cWid + x] : true;
+            
+                *col |= (!left && !top) ? ROUND_TOPLEFT : 0;
+                *col |= (!right && !top) ? ROUND_TOPRIGHT : 0;
+                *col |= (!left && !bottom) ? ROUND_BOTTOMLEFT : 0;
+                *col |= (!right && !bottom) ? ROUND_BOTTOMRIGHT : 0;
+            }
+        }
+    }
+}
+
+static Rectangle world_get_bound_from_grid(int px, int py, int *col) {
     int localx = (px - current_level->worldX) / 8;
     int localy = (py - current_level->worldY) / 8;
 
     if (localx >= 0 && localx < current_intGrid->cWid &&
         localy >= 0 && localy < current_intGrid->cHei) {
-        if (current_intGrid->intGrid[localy * current_intGrid->cWid + localx]) {
+        int c = collisions[localy * current_intGrid->cWid + localx];
+        if (c) {
+            *col = c;
             return (Rectangle){
-                .x = (float)(localx * 8 + current_level->worldX) - 0.1f,
-                .y = (float)(localy * 8 + current_level->worldY) - 0.1f,
-                .width = 8.0f + 0.2f,
-                .height = 8.0f + 0.2f,
+                .x = (float)(localx * 8 + current_level->worldX) - TILE_PADDING,
+                .y = (float)(localy * 8 + current_level->worldY) - TILE_PADDING,
+                .width = 8.0f + TILE_PADDING2,
+                .height = 8.0f + TILE_PADDING2,
             };
         } else {
+            *col = 0;
             return (Rectangle){
                 .x = 0.0f,
                 .y = 0.0f,
@@ -155,28 +193,47 @@ static Rectangle world_get_bound_from_grid(int px, int py) {
 }
 
 static Vector2 origin;
-int sort_rect(const Rectangle *a, const Rectangle *b) {
-    if (Vector2Distance((Vector2){ .x = a->x + 4.0f, .y = a->y + 4.0f }, origin) < 
-        Vector2Distance((Vector2){ .x = b->x + 4.0f, .y = b->y + 4.0f }, origin)) {
+int sort_rect(const TileCollision *a, const TileCollision *b) {
+    if (Vector2Distance((Vector2){ .x = a->bounds.x + 4.0f, .y = a->bounds.y + 4.0f }, origin) < 
+        Vector2Distance((Vector2){ .x = b->bounds.x + 4.0f, .y = b->bounds.y + 4.0f }, origin)) {
         return -1;
     } else {
         return 1;
     }
 }
 
-void world_get_colliding_tiles(Rectangle rects[MAX_COLLISION_TILES], float x, float y, float r) {
-    int curr_rect = 0;
-    memset(rects, 0, sizeof(Rectangle) * MAX_COLLISION_TILES);
+void world_get_colliding_tiles(TileCollision collisions[MAX_TILE_COLLISIONS], float x, float y, float r) {
+    int curr_rect = 0, col;
+    memset(collisions, 0, sizeof(TileCollision) * MAX_TILE_COLLISIONS);
 
     for (int xx = (int)(x - r) - 8; xx <= (int)(x + r) + 8; xx += 8) {
         for (int yy = (int)(y - r) - 8; yy <= (int)(y + r) + 8; yy += 8) {
-            Rectangle rect = world_get_bound_from_grid(xx, yy);
-            if (x > rect.x - r &&
-                x < rect.x + rect.width + r &&
-                y > rect.y - r &&
-                y < rect.y + rect.height + r) {
-                rects[curr_rect++] = rect;
-                if (curr_rect == MAX_COLLISION_TILES - 1) {
+            Rectangle rect = world_get_bound_from_grid(xx, yy, &col);
+            float left_margin = x - (rect.x - r);
+            float right_margin = rect.x + rect.width + r - x;
+            float top_margin = y - (rect.y - r);
+            float bottom_margin = rect.y + rect.height + r - y;
+#define R (2.0f * (r + TILE_PADDING))
+
+            if (col && left_margin > 0 && right_margin > 0 &&
+                top_margin > 0 && bottom_margin > 0) {
+                if (col & ROUND_TOPLEFT && right_margin > R && bottom_margin > R &&
+                    Vector2Length((Vector2){ right_margin - R, bottom_margin - R }) > 8.0f) {
+                    continue;
+                } else if (col & ROUND_TOPRIGHT && left_margin > R && bottom_margin > R &&
+                     Vector2Length((Vector2){ left_margin - R, bottom_margin - R }) > 8.0f) {
+                    continue;
+                } else if (col & ROUND_BOTTOMLEFT && right_margin > R && top_margin > R &&
+                     Vector2Length((Vector2){ right_margin - R, top_margin - R }) > 8.0f) {
+                    continue;
+                } else if (col & ROUND_BOTTOMRIGHT && left_margin > R && top_margin > R &&
+                     Vector2Length((Vector2){ left_margin - R, top_margin - R }) > 8.0f) {
+                    continue;
+                }
+
+                collisions[curr_rect].bounds = rect;
+                collisions[curr_rect++].col_type = col;
+                if (curr_rect == MAX_TILE_COLLISIONS - 1) {
                     break;
                 }
             }
@@ -184,6 +241,6 @@ void world_get_colliding_tiles(Rectangle rects[MAX_COLLISION_TILES], float x, fl
     }
 
     origin = (Vector2){ .x = x, .y = y };
-    qsort(rects, 8, sizeof(Rectangle), (int(*)(const void *, const void *))sort_rect);
+    qsort(collisions, 8, sizeof(TileCollision), (int(*)(const void *, const void *))sort_rect);
 }
 
