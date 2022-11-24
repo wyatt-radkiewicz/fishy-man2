@@ -24,6 +24,7 @@ extern struct levels *current_level, *transition_level;
 extern bool in_transition;
 extern float transition_timer;
 extern int current_doughnuts_left;
+extern int current_level_num;
 
 void world_setup(void);
 void world_free(void);
@@ -35,5 +36,6 @@ void world_spawn_entities_for_level(int levelUid);
 void world_despawn_entities_for_level(int levelUid);
 int world_get_colliding_tiles(TileCollision collisions[MAX_TILE_COLLISIONS], float x, float y, float r);
 void world_unlock_doors(void);
+int world_get_level_num(struct levels *level);
 
 #endif

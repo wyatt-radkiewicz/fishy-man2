@@ -9,6 +9,8 @@
 #include <raymath.h>
 #include "../world.h"
 
+#define SPEED_MULTIPLIER 2.0f
+
 static void try_transition(Entity *entity, bool vertical, float dir);
 
 void fishyman_update(Entity *entity, float delta) {
@@ -76,7 +78,7 @@ void fishyman_update(Entity *entity, float delta) {
         bubble->custom_data = bubble_data_new(
             0.4f, 1.3f,
             1.0f, 8.0f,
-            -entity->velocity.x, -entity->velocity.x,
+            -entity->velocity.x / SPEED_MULTIPLIER, -entity->velocity.x / SPEED_MULTIPLIER,
             30.0f, 60.0f,
             fabsf(entity->velocity.x)
         );
@@ -108,6 +110,20 @@ void fishyman_update(Entity *entity, float delta) {
         camera.position.y = (float)current_level->worldY + (float)current_level->pxHei - camera.dimen.y * camera.scale / 2.0f;
     }
 
+    // Be level bound.
+    if (entity->position.x - entity->radius * entity->scale / 2.0f < (float)current_level->worldX) {
+        entity->position.x = (float)current_level->worldX + entity->radius * entity->scale / 2.0f;
+    }
+    if (entity->position.x + entity->radius * entity->scale / 2.0f > (float)current_level->worldX + (float)current_level->pxWid) {
+        entity->position.x = (float)current_level->worldX + (float)current_level->pxWid - entity->radius * entity->scale / 2.0f;
+    }
+    if (entity->position.y - entity->radius * entity->scale / 2.0f < (float)current_level->worldY) {
+        entity->position.y = (float)current_level->worldY + entity->radius * entity->scale / 2.0f;
+    }
+    if (entity->position.y + entity->radius * entity->scale / 2.0f > (float)current_level->worldY + (float)current_level->pxHei) {
+        entity->position.y = (float)current_level->worldY + (float)current_level->pxHei - entity->radius * entity->scale / 2.0f;
+    }
+
     // Start level transitions
     try_transition(entity, false, 1.0f);
     try_transition(entity, false, -1.0f);
@@ -123,7 +139,8 @@ static void try_transition(Entity *entity, bool vertical, float dir) {
             entity->position.y + dir * 5.0f < (float)current_level->worldY) {
             for (int i = 0; i < current_level->numNeighbors; i++) {
                     struct levels *level = getLevelFromUid((float)current_level->neighbors[i].uid);
-                    if (entity->position.x > (float)level->worldX &&
+                    if (current_level_num <= world_get_level_num(level) &&
+                        entity->position.x > (float)level->worldX &&
                         entity->position.x < (float)level->worldX + (float)level->pxWid &&
                         entity->position.y + dir * 16.0f > (float)level->worldY &&
                         entity->position.y + dir * 16.0f < (float)level->worldY + (float)level->pxHei) {
@@ -147,7 +164,8 @@ static void try_transition(Entity *entity, bool vertical, float dir) {
             entity->position.x + dir * 5.0f < (float)current_level->worldX) {
             for (int i = 0; i < current_level->numNeighbors; i++) {
                     struct levels *level = getLevelFromUid((float)current_level->neighbors[i].uid);
-                    if (entity->position.x + dir * 16.0f > (float)level->worldX &&
+                    if (current_level_num <= world_get_level_num(level) &&
+                        entity->position.x + dir * 16.0f > (float)level->worldX &&
                         entity->position.x + dir * 16.0f < (float)level->worldX + (float)level->pxWid &&
                         entity->position.y > (float)level->worldY &&
                         entity->position.y < (float)level->worldY + (float)level->pxHei) {
@@ -168,8 +186,6 @@ static void try_transition(Entity *entity, bool vertical, float dir) {
         }
     }
 }
-
-#define SPEED_MULTIPLIER 2.0f
 
 FishyManData *fishyman_data_new(void) {
     FishyManData *data = malloc(sizeof(FishyManData));

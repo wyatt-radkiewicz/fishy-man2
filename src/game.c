@@ -71,6 +71,7 @@ Entity *game_spawn_entity(EntityPreset preset, Vector2 pos) {
         entity_capacity *= 2;
         entities = realloc(entities, sizeof(Entity *) * entity_capacity);
         memset(entities + entity_capacity / 2, 0, sizeof(Entity *) * (entity_capacity / 2));
+        entity_slot = &entities[entity_capacity / 2];
     }
 
     // Make the entity

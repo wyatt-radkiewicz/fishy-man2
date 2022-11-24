@@ -15,10 +15,10 @@ void doughnut_update(Entity *entity, float delta) {
 
     if (data->eaten) {
         data->eaten_timer += delta;
-        entity->scale -= delta * 2.0f;
-        entity->tint.a = (uint8_t)((1.0f - data->eaten_timer) * 255.0f);
+        entity->scale -= delta * 1.0f;
+        entity->tint.a = (uint8_t)fminf((1.1f - data->eaten_timer * 2.0f) * 255.0f, 255.0f);
 
-        if (data->eaten_timer >= 1.0f) {
+        if (data->eaten_timer >= 0.5f) {
             game_despawn_entity(entity);
         }
     }

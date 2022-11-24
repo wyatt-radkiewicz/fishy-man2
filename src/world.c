@@ -13,6 +13,7 @@ bool in_transition = false;
 struct layerInstances *current_intGrid;
 int current_doughnuts_left = 0;
 float transition_timer = 0.0f;
+int current_level_num;
 
 static int *collisions = NULL;
 
@@ -86,12 +87,16 @@ void world_end_transition(void) {
     current_level_uid = transition_level_uid;
     current_level = transition_level;
     current_intGrid = getLayer("Collisions", current_level_uid);
+    current_level_num = world_get_level_num(current_level);
     free_collisions();
     build_collisions();
     world_despawn_entities_for_level(last_level_id);
     transition_level = NULL;
     transition_level_uid = -1;
     lock_anim = 0.0f;
+}
+int world_get_level_num(struct levels *level) {
+    return level->firstIntFieldInst;
 }
 
 static void draw_autolayer(struct layerInstances *layer, float offset_x, float offset_y) {
