@@ -5,9 +5,10 @@
 #include "game.h"
 #include <raymath.h>
 
+#include "entities/fishyman.h"
+
 static const char *ident_to_preset[ENTITY_PRESET_MAX] = {
     "ENTITY_PRESET_UNKOWN_IDENTIFIER",
-    "ENTITY_PRESET_FISHYMAN_SPAWN",
     "ENTITY_PRESET_FISHYMAN",
     "ENTITY_PRESET_BUBBLE",
     "ENTITY_PRESET_BUBBLE_SPAWNER",
@@ -32,12 +33,14 @@ Entity *entity_preset(EntityPreset preset, Vector2 pos) {
     
     switch (preset) {
         case ENTITY_PRESET_FISHYMAN:
-        entity_new(entity, NULL, pos, ANIM_FISHYMAN_NORMAL, 3.0f, true, NULL, false);
+        entity_new(entity, fishyman_update, pos, ANIM_FISHYMAN_NORMAL, 3.0f, true, fishyman_data_new(), false);
         break;
         default:
         entity_new(entity, NULL, pos, ANIM_NONE, 0.0f, false, NULL, false);
         break;
     }
+
+    entity->original_preset = preset;
 
     return entity;
 }
@@ -52,6 +55,9 @@ void entity_new(Entity *entity, EntityUpdateFunc func, Vector2 pos, Animations a
     entity->update_func = func;
     entity->custom_data = custom_data;
     entity->free_custom_data = free_data;
+    entity->flipx = false;
+    entity->original_preset = ENTITY_PRESET_UNKOWN_IDENTIFIER;
+    entity->level_uid = -1;
 }
 void entity_drop(Entity *entity) {
     if (entity->free_custom_data && entity->custom_data) {
@@ -81,9 +87,12 @@ void entity_draw(Entity *entity) {
         .height = scaled_height,
     });
 
+    Rectangle source = animation_get_rect(&entity->animation);
+    source.width *= entity->flipx ? -1.0f : 1.0f;
+
     DrawTexturePro(
         entity_texture,
-        animation_get_rect(&entity->animation),
+        source,
         dest,
         (Vector2) {
             .x = dest.width / 2,

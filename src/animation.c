@@ -115,9 +115,9 @@ void animation_update(Animation *anim, float delta) {
 }
 Rectangle animation_get_rect(Animation *anim) {
     return (Rectangle){
-        .x = anim->config->base_x + anim->config->width * anim->frame,
-        .y = anim->config->base_y,
-        .width = anim->config->width,
-        .height = anim->config->height
+        .x = anim->config->base_x + anim->config->width * anim->frame + 0.0001f,
+        .y = anim->config->base_y + 0.0001f,
+        .width = anim->config->width - 0.0002f,
+        .height = anim->config->height - 0.0002f,
     };
 }

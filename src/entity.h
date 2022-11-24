@@ -7,7 +7,6 @@
 
 typedef enum EntityPreset {
     ENTITY_PRESET_UNKOWN_IDENTIFIER,
-    ENTITY_PRESET_FISHYMAN_SPAWN,
     ENTITY_PRESET_FISHYMAN,
     ENTITY_PRESET_BUBBLE,
     ENTITY_PRESET_BUBBLE_SPAWNER,
@@ -33,6 +32,10 @@ struct Entity {
 
     bool collide_with_others;
     bool free_custom_data;
+    bool flipx;
+
+    EntityPreset original_preset;
+    int level_uid;
 };
 
 EntityPreset entity_preset_from_identifier(const char *ident);

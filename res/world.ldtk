@@ -969,7 +969,7 @@
 		}
 	], "entities": [
 		{
-			"identifier": "ENTITY_PRESET_FISHYMAN_SPAWN",
+			"identifier": "ENTITY_PRESET_FISHYMAN",
 			"uid": 41,
 			"tags": [],
 			"width": 8,
@@ -1510,7 +1510,7 @@
 					"gridTiles": [],
 					"entityInstances": [
 						{
-							"__identifier": "ENTITY_PRESET_FISHYMAN_SPAWN",
+							"__identifier": "ENTITY_PRESET_FISHYMAN",
 							"__grid": [7,6],
 							"__pivot": [0.5,0.5],
 							"__tags": [],

@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 
     camera_new(&camera, (Vector2){ .x = 128.0f, .y = 128.0f });
     world_setup();
-    game_spawn_entity(ENTITY_PRESET_FISHYMAN, Vector2Zero());
+    world_spawn_entities_for_current_level();
 
     while (!WindowShouldClose()) {
         update_entities();
@@ -85,6 +85,15 @@ void game_despawn_entity(Entity *entity) {
             }
         }
     }
+}
+Entity **game_find_next_entity_of_preset(Entity **iter, EntityPreset preset) {
+    for (int i = iter - entities; i < entity_capacity; i++) {
+        if (entities[i] && entities[i]->original_preset == preset) {
+            return &entities[i];
+        }
+    }
+
+    return NULL;
 }
 
 static void load_assets(void) {
