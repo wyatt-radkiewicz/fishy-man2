@@ -3,7 +3,7 @@ project(fishy-man2 VERSION 0.1)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
 add_executable(fishy-man2)
-target_sources(fishy-man2 PRIVATE entities/shark.c entities/doughnut.c entities/bubble_spawner.c entities/bubble.c entities/fishyman.c world.c camera.c game.c entity.c animation.c)
+target_sources(fishy-man2 PRIVATE entities/ghost_shark.c entities/shark.c entities/doughnut.c entities/bubble_spawner.c entities/bubble.c entities/fishyman.c world.c camera.c game.c entity.c animation.c)
 
 if(WIN32)
     find_package(raylib CONFIG REQUIRED)

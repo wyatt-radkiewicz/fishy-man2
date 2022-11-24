@@ -2962,6 +2962,20 @@
 							"defUid": 74,
 							"px": [236,76],
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
+						},
+						{
+							"__identifier": "ENTITY_PRESET_GHOST_SHARK",
+							"__grid": [16,8],
+							"__pivot": [0.5,0.5],
+							"__tags": [],
+							"__tile": { "tilesetUid": 43, "x": 0, "y": 40, "w": 16, "h": 8 },
+							"__smartColor": "#94D9B3",
+							"iid": "d1d64590-5110-11ed-8e90-5fb9c131aa42",
+							"width": 16,
+							"height": 8,
+							"defUid": 79,
+							"px": [132,68],
+							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 91, "realEditorValues": [] }]
 						}
 					]
 				},

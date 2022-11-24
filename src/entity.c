@@ -11,6 +11,7 @@
 #include "entities/bubble_spawner.h"
 #include "entities/doughnut.h"
 #include "entities/shark.h"
+#include "entities/ghost_shark.h"
 
 static const char *ident_to_preset[ENTITY_PRESET_MAX] = {
     "ENTITY_PRESET_UNKOWN_IDENTIFIER",
@@ -57,6 +58,10 @@ Entity *entity_preset(EntityPreset preset, Vector2 pos) {
         case ENTITY_PRESET_SHARK:
         entity_new(entity, shark_update, pos, ANIM_SHARK, 7.0f, true, shark_data_new(pos), true);
         break;
+        case ENTITY_PRESET_GHOST_SHARK:
+        entity_new(entity, ghost_shark_update, pos, ANIM_SHARK_GHOST, 7.0f, true, ghost_shark_data_new(), true);
+        entity->priority = true;
+        break;
         default:
         entity_new(entity, NULL, pos, ANIM_NONE, 0.0f, false, NULL, false);
         break;
@@ -78,6 +83,7 @@ void entity_new(Entity *entity, EntityUpdateFunc func, Vector2 pos, Animations a
     entity->custom_data = custom_data;
     entity->free_custom_data = free_data;
     entity->flipx = false;
+    entity->flipy = false;
     entity->original_preset = ENTITY_PRESET_UNKOWN_IDENTIFIER;
     entity->level_uid = -1;
     entity->tint = WHITE;
@@ -112,6 +118,7 @@ void entity_draw(Entity *entity) {
 
     Rectangle source = animation_get_rect(&entity->animation);
     source.width *= entity->flipx ? -1.0f : 1.0f;
+    source.height *= entity->flipy ? -1.0f : 1.0f;
 
     DrawTexturePro(
         entity_texture,
@@ -170,6 +177,10 @@ static void entity_process_physics(Entity *entity, float delta) {
         Vector2 move_dir = Vector2Normalize(dif);
         entity->position = Vector2Add(entity->position, Vector2Scale(move_dir, -len));
         ent->position = Vector2Add(ent->position, Vector2Scale(move_dir, len));
+    }
+
+    if (entity->original_preset == ENTITY_PRESET_GHOST_SHARK) {
+        return;
     }
 
     float radius = entity->radius * entity->scale;

@@ -56,7 +56,7 @@ const AnimationConfig animations[ANIM_MAX] = {
         .width = 16, .height = 8,
         .frames = 10,
         .dir = ANIMDIR_PINGPONG,
-        .frame_time = 1.0 / 5.0,
+        .frame_time = 1.0 / 16.0,
     },
     (AnimationConfig){  // ANIM_DOUGHNUT_MEGA
         .base_x = 0, .base_y = 48,

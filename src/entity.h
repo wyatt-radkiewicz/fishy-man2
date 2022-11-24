@@ -32,7 +32,7 @@ struct Entity {
 
     bool collide_with_others;
     bool free_custom_data;
-    bool flipx;
+    bool flipx, flipy;
     bool priority;
 
     Color tint;
