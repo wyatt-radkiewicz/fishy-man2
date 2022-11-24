@@ -6,6 +6,8 @@
 #include <raymath.h>
 
 #include "entities/fishyman.h"
+#include "entities/bubble.h"
+#include "entities/bubble_spawner.h"
 
 static const char *ident_to_preset[ENTITY_PRESET_MAX] = {
     "ENTITY_PRESET_UNKOWN_IDENTIFIER",
@@ -33,7 +35,15 @@ Entity *entity_preset(EntityPreset preset, Vector2 pos) {
     
     switch (preset) {
         case ENTITY_PRESET_FISHYMAN:
-        entity_new(entity, fishyman_update, pos, ANIM_FISHYMAN_NORMAL, 3.0f, true, fishyman_data_new(), false);
+        entity_new(entity, fishyman_update, pos, ANIM_FISHYMAN_NORMAL, 3.0f, true, fishyman_data_new(), true);
+        break;
+        case ENTITY_PRESET_BUBBLE:
+        entity_new(entity, bubble_update, pos, (rand() & 4) ? ANIM_BUBBLE : ANIM_BUBBLE_SMALL, 0.0f, false, NULL, true);
+        entity->tint.a = 0;
+        entity->priority = true;
+        break;
+        case ENTITY_PRESET_BUBBLE_SPAWNER:
+        entity_new(entity, bubble_spawner_update, pos, ANIM_NONE, 0.0f, false, bubble_spawner_data_new(), true);
         break;
         default:
         entity_new(entity, NULL, pos, ANIM_NONE, 0.0f, false, NULL, false);
@@ -47,7 +57,7 @@ Entity *entity_preset(EntityPreset preset, Vector2 pos) {
 void entity_new(Entity *entity, EntityUpdateFunc func, Vector2 pos, Animations anim_config, float radius, bool collide_with_others, void *custom_data, bool free_data) {
     entity->position = pos;
     entity->velocity = Vector2Zero();
-    entity->scale = Vector2One();
+    entity->scale = 1.0f;
     animation_new(&entity->animation, anim_config);
     entity->radius = radius;
     entity->rotation = 0.0f;
@@ -58,6 +68,8 @@ void entity_new(Entity *entity, EntityUpdateFunc func, Vector2 pos, Animations a
     entity->flipx = false;
     entity->original_preset = ENTITY_PRESET_UNKOWN_IDENTIFIER;
     entity->level_uid = -1;
+    entity->tint = WHITE;
+    entity->priority = false;
 }
 void entity_drop(Entity *entity) {
     if (entity->free_custom_data && entity->custom_data) {
@@ -77,8 +89,8 @@ void entity_update(Entity *entity, float delta) {
     
 }
 void entity_draw(Entity *entity) {
-    float scaled_width = (float)(entity->animation.config->width) * entity->scale.x;
-    float scaled_height = (float)(entity->animation.config->height) * entity->scale.y;
+    float scaled_width = (float)(entity->animation.config->width) * entity->scale;
+    float scaled_height = (float)(entity->animation.config->height) * entity->scale;
 
     Rectangle dest = camera_transform_rect(&camera, (Rectangle) {
         .x = entity->position.x - scaled_width / 2.0f,
@@ -99,6 +111,6 @@ void entity_draw(Entity *entity) {
             .y = dest.height / 2,
         },
         entity->rotation,
-        WHITE
+        entity->tint
     );
 }

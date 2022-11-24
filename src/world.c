@@ -8,6 +8,11 @@ int last_level_id = -1, current_level_uid = -1, transition_level_uid = -1;
 struct levels *current_level, *transition_level;
 bool in_transition = false;
 
+static float next_floor_anim = 3.0f;
+static float next_rock_anim = 6.0f;
+static int floor_anim_frame = 0;
+static int rock_anim_frame = 0;
+
 static void draw_autolayer(struct layerInstances *layer, float offset_x, float offset_y);
 
 void world_setup(void) {
@@ -28,6 +33,13 @@ void world_draw_background(void) {
 void world_draw_foreground(void) {
     float x = (float)current_level->worldX;
     float y = (float)current_level->worldY;
+    next_floor_anim = (next_floor_anim < 0.0f) ? 10.0f : (next_floor_anim - GetFrameTime());
+    next_rock_anim = (next_rock_anim < 0.0f) ? 12.0f : (next_rock_anim - GetFrameTime());
+
+    int floor_frame = (int)(next_floor_anim * 8.0f);
+    int rock_frame = (int)(next_floor_anim * 4.0f);
+    floor_anim_frame = (floor_frame < 12) ? floor_frame : 0;
+    rock_anim_frame = (rock_frame < 5) ? rock_frame : 0;
 
     draw_autolayer(getLayer("Locks", current_level->uid), x, y);
     draw_autolayer(getLayer("Collisions", current_level->uid), x, y);
@@ -55,6 +67,12 @@ static void draw_autolayer(struct layerInstances *layer, float offset_x, float o
 
         if ((x == 0 || x == 48) && (y == 64 || y == 72)) {
             x += ((int)(GetTime() * 3.0) % 6) * 8;
+        }
+        if (x == 0 && y == 56) {
+            x += rock_anim_frame * 8;
+        }
+        if (x == 0 && y == 48) {
+            x += floor_anim_frame * 8;
         }
 
         Rectangle dest = camera_transform_rect(&camera, (Rectangle){

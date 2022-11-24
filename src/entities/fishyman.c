@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "bubble.h"
 #include "../entity.h"
 #include "fishyman.h"
 #include "../game.h"
@@ -40,12 +41,31 @@ void fishyman_update(Entity *entity, float delta) {
         }
     }
 
-    entity->rotation = entity->velocity.y / data->speed * 10.0f * (entity->flipx ? -1.0f : 1.0f);
-    entity->animation.speed_scale = 
+    float speed_percent = 
         Vector2Length(entity->velocity) /
-        Vector2Length((Vector2){ .x = data->speed, .y = data->speed }) * 1.5f + 1.0f;
+        Vector2Length((Vector2){ .x = data->speed, .y = data->speed });
+    entity->rotation = entity->velocity.y / data->speed * 10.0f * (entity->flipx ? -1.0f : 1.0f);
+    entity->animation.speed_scale = speed_percent * 1.5f + 1.0f;
     entity->velocity.x = fminf(data->speed, fmaxf(entity->velocity.x, -data->speed));
     entity->velocity.y = fminf(data->speed, fmaxf(entity->velocity.y, -data->speed));
+
+    // Spawn bubbles
+    data->bubble_timer -= delta;
+    if (Vector2Length(entity->velocity) < 8.0f) {
+        data->bubble_timer = 1.0f;
+    } else if (data->bubble_timer <= 0.0f) {
+        data->bubble_timer = fmaxf(1.0f - speed_percent, 0.3f);
+        
+        // Spawn bubble
+        Entity *bubble = game_spawn_entity(ENTITY_PRESET_BUBBLE, entity->position);
+        bubble->custom_data = bubble_data_new(
+            0.4f, 1.3f,
+            1.0f, 8.0f,
+            -entity->velocity.x, -entity->velocity.x,
+            30.0f, 60.0f,
+            fabsf(entity->velocity.x)
+        );
+    }
 
     camera.position = Vector2Add(camera.position, Vector2Scale(Vector2Subtract(entity->position, camera.position), 0.8f));
 

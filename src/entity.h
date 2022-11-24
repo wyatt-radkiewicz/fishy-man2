@@ -23,7 +23,7 @@ typedef void(*EntityUpdateFunc)(struct Entity *, float);
 struct Entity {
     Vector2 position;
     Vector2 velocity;
-    Vector2 scale;
+    float scale;
     Animation animation;
     float radius;
     float rotation;
@@ -33,7 +33,9 @@ struct Entity {
     bool collide_with_others;
     bool free_custom_data;
     bool flipx;
+    bool priority;
 
+    Color tint;
     EntityPreset original_preset;
     int level_uid;
 };

@@ -22,7 +22,7 @@ static void unload_assets(void);
 static void entity_list_new(void);
 static void entity_list_drop(void);
 static void update_entities(void);
-static void draw_entities(void);
+static void draw_entities(bool priority);
 
 int main(int argc, char **argv) {
     InitWindow(500, 500, "Fishy Man 2");
@@ -41,8 +41,9 @@ int main(int argc, char **argv) {
         ClearBackground((Color){ .r = 205, .g = 212, .b = 165, .a = 255 });
         camera_update(&camera, GetScreenWidth(), GetScreenHeight());
         world_draw_background();
-        draw_entities();
+        draw_entities(false);
         world_draw_foreground();
+        draw_entities(true);
         EndDrawing();
     }
 
@@ -83,6 +84,7 @@ void game_despawn_entity(Entity *entity) {
             } else {
                 despawn_last_entity = true;
             }
+            return;
         }
     }
 }
@@ -111,6 +113,7 @@ static void entity_list_new(void) {
 static void entity_list_drop(void) {
     for (int i = 0; i < entity_capacity; i++) {
         if (entities[i]) {
+            entity_drop(entities[i]);
             free(entities[i]);
             entities[i] = NULL;
         }
@@ -129,15 +132,16 @@ static void update_entities(void) {
                 entity_drop(entities[current_entity]);
                 free(entities[current_entity]);
                 entities[current_entity] = NULL;
+                despawn_last_entity = false;
             }
         }
     }
 
     current_entity = -1;
 }
-static void draw_entities(void) {
+static void draw_entities(bool priority) {
     for (int i = 0; i < entity_capacity; i++) {
-        if (entities[i]) {
+        if (entities[i] && entities[i]->priority == priority) {
             entity_draw(entities[i]);
         }
     }

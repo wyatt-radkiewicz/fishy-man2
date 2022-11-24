@@ -5,6 +5,8 @@ typedef struct FishyManData {
     float speed;
     float accel;
     float decel;
+
+    float bubble_timer;
 } FishyManData;
 
 void fishyman_update(Entity *entity, float delta);
