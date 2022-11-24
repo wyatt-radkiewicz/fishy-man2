@@ -969,7 +969,7 @@
 		}
 	], "entities": [
 		{
-			"identifier": "FishyManSpawn",
+			"identifier": "ENTITY_PRESET_FISHYMAN_SPAWN",
 			"uid": 41,
 			"tags": [],
 			"width": 8,
@@ -1030,7 +1030,7 @@
 			]
 		},
 		{
-			"identifier": "Doughnut",
+			"identifier": "ENTITY_PRESET_DOUGHNUT",
 			"uid": 72,
 			"tags": [],
 			"width": 8,
@@ -1091,7 +1091,7 @@
 			]
 		},
 		{
-			"identifier": "Shark",
+			"identifier": "ENTITY_PRESET_SHARK",
 			"uid": 73,
 			"tags": [],
 			"width": 16,
@@ -1152,7 +1152,7 @@
 			]
 		},
 		{
-			"identifier": "BubbleSpawner",
+			"identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 			"uid": 74,
 			"tags": [],
 			"width": 8,
@@ -1213,7 +1213,7 @@
 			]
 		},
 		{
-			"identifier": "SuperDoughnut",
+			"identifier": "ENTITY_PRESET_MEGA_DOUGHNUT",
 			"uid": 78,
 			"tags": [],
 			"width": 16,
@@ -1274,7 +1274,7 @@
 			]
 		},
 		{
-			"identifier": "GhostShark",
+			"identifier": "ENTITY_PRESET_GHOST_SHARK",
 			"uid": 79,
 			"tags": [],
 			"width": 16,
@@ -1335,7 +1335,7 @@
 			]
 		},
 		{
-			"identifier": "Checkpoint",
+			"identifier": "ENTITY_PRESET_CHECKPOINT",
 			"uid": 80,
 			"tags": [],
 			"width": 40,
@@ -1401,7 +1401,7 @@
 			"__cHei": 10,
 			"identifier": "Terrain2",
 			"uid": 2,
-			"relPath": "assets/terrain.png",
+			"relPath": "terrain.png",
 			"embedAtlas": null,
 			"pxWid": 136,
 			"pxHei": 80,
@@ -1445,7 +1445,7 @@
 			"__cHei": 13,
 			"identifier": "Entities",
 			"uid": 43,
-			"relPath": "assets/entities.png",
+			"relPath": "entities.png",
 			"embedAtlas": null,
 			"pxWid": 160,
 			"pxHei": 104,
@@ -1510,7 +1510,7 @@
 					"gridTiles": [],
 					"entityInstances": [
 						{
-							"__identifier": "FishyManSpawn",
+							"__identifier": "ENTITY_PRESET_FISHYMAN_SPAWN",
 							"__grid": [7,6],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -1524,7 +1524,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "res://src/fishyman/FishyMan.tscn", "__type": "String", "__tile": null, "defUid": 86, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [16,23],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -1538,7 +1538,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [18,24],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -1552,7 +1552,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [21,24],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -1566,7 +1566,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [15,27],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -1580,7 +1580,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [18,27],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -1594,7 +1594,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [20,14],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -1608,7 +1608,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [7,8],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -1633,7 +1633,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "0abc3940-5110-11ed-8f67-db652311f8ca",
 					"levelId": 0,
 					"layerDefUid": 1,
@@ -2242,7 +2242,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "5de0e330-5110-11ed-8f67-01a1914f344c",
 					"levelId": 0,
 					"layerDefUid": 68,
@@ -2306,7 +2306,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "cb1d3a90-5110-11ed-8f67-0399e0495042",
 					"levelId": 0,
 					"layerDefUid": 45,
@@ -2852,7 +2852,7 @@
 					"gridTiles": [],
 					"entityInstances": [
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [18,6],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -2866,7 +2866,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [8,13],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -2880,7 +2880,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [16,13],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -2894,7 +2894,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [8,7],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -2908,7 +2908,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [27,9],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -2922,7 +2922,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [29,9],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -2947,7 +2947,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "dff78db1-5110-11ed-8f67-13c825892120",
 					"levelId": 75,
 					"layerDefUid": 1,
@@ -3269,7 +3269,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "dff78db2-5110-11ed-8f67-a5de96fb7d27",
 					"levelId": 75,
 					"layerDefUid": 68,
@@ -3318,7 +3318,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "dff78db3-5110-11ed-8f67-b96541f8b99f",
 					"levelId": 75,
 					"layerDefUid": 45,
@@ -3604,7 +3604,7 @@
 					"gridTiles": [],
 					"entityInstances": [
 						{
-							"__identifier": "Shark",
+							"__identifier": "ENTITY_PRESET_SHARK",
 							"__grid": [18,15],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -3618,7 +3618,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 88, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [3,29],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -3632,7 +3632,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [11,16],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -3646,7 +3646,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [22,10],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -3660,7 +3660,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [18,19],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -3685,7 +3685,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "71813e72-5110-11ed-8f67-091ee62fe6a5",
 					"levelId": 76,
 					"layerDefUid": 1,
@@ -4003,7 +4003,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "71813e73-5110-11ed-8f67-f1fe5fcfec5e",
 					"levelId": 76,
 					"layerDefUid": 68,
@@ -4051,7 +4051,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "71813e74-5110-11ed-8f67-afdbc1ed05ae",
 					"levelId": 76,
 					"layerDefUid": 45,
@@ -4403,7 +4403,7 @@
 					"gridTiles": [],
 					"entityInstances": [
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [15,5],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -4417,7 +4417,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Shark",
+							"__identifier": "ENTITY_PRESET_SHARK",
 							"__grid": [11,14],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -4431,7 +4431,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 88, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [28,15],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -4456,7 +4456,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "c0674d91-5110-11ed-8f67-db63a87425f0",
 					"levelId": 77,
 					"layerDefUid": 1,
@@ -4959,7 +4959,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "c0674d92-5110-11ed-8f67-b39d2485c47b",
 					"levelId": 77,
 					"layerDefUid": 68,
@@ -5014,7 +5014,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "c0674d93-5110-11ed-8f67-db83c8a3cfd8",
 					"levelId": 77,
 					"layerDefUid": 45,
@@ -5300,7 +5300,7 @@
 					"gridTiles": [],
 					"entityInstances": [
 						{
-							"__identifier": "Checkpoint",
+							"__identifier": "ENTITY_PRESET_CHECKPOINT",
 							"__grid": [10,28],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -5314,7 +5314,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 92, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [18,29],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -5328,7 +5328,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [20,29],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -5342,7 +5342,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [2,16],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -5356,7 +5356,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 89, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "BubbleSpawner",
+							"__identifier": "ENTITY_PRESET_BUBBLE_SPAWNER",
 							"__grid": [20,21],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -5381,7 +5381,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "1d98f8f2-5110-11ed-8f67-1b05ae020e94",
 					"levelId": 81,
 					"layerDefUid": 1,
@@ -5792,7 +5792,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "1d98f8f3-5110-11ed-8f67-4b0dacca3711",
 					"levelId": 81,
 					"layerDefUid": 68,
@@ -5848,7 +5848,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "1d98f8f4-5110-11ed-8f67-713b5cfd333d",
 					"levelId": 81,
 					"layerDefUid": 45,
@@ -6267,7 +6267,7 @@
 					"gridTiles": [],
 					"entityInstances": [
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [7,4],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -6281,7 +6281,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [14,8],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -6295,7 +6295,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [21,4],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -6309,7 +6309,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [4,12],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -6323,7 +6323,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [26,12],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -6337,7 +6337,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Shark",
+							"__identifier": "ENTITY_PRESET_SHARK",
 							"__grid": [4,7],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -6351,7 +6351,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 88, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Shark",
+							"__identifier": "ENTITY_PRESET_SHARK",
 							"__grid": [18,7],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -6365,7 +6365,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 88, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Shark",
+							"__identifier": "ENTITY_PRESET_SHARK",
 							"__grid": [13,11],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -6390,7 +6390,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "78bf0492-5110-11ed-8f67-81924cfca0f9",
 					"levelId": 82,
 					"layerDefUid": 1,
@@ -6795,7 +6795,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "78bf0493-5110-11ed-8f67-2dd023a43f7d",
 					"levelId": 82,
 					"layerDefUid": 68,
@@ -6851,7 +6851,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "78bf0494-5110-11ed-8f67-b3ee052ec189",
 					"levelId": 82,
 					"layerDefUid": 45,
@@ -7251,7 +7251,7 @@
 					"gridTiles": [],
 					"entityInstances": [
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [9,19],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -7265,7 +7265,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [10,12],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -7279,7 +7279,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [19,12],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -7293,7 +7293,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [19,20],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -7307,7 +7307,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [15,8],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -7321,7 +7321,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Doughnut",
+							"__identifier": "ENTITY_PRESET_DOUGHNUT",
 							"__grid": [4,11],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -7335,7 +7335,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 87, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Shark",
+							"__identifier": "ENTITY_PRESET_SHARK",
 							"__grid": [13,14],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -7349,7 +7349,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 88, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Shark",
+							"__identifier": "ENTITY_PRESET_SHARK",
 							"__grid": [4,16],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -7363,7 +7363,7 @@
 							"fieldInstances": [{ "__identifier": "NodeType", "__value": "Node", "__type": "String", "__tile": null, "defUid": 88, "realEditorValues": [] }]
 						},
 						{
-							"__identifier": "Shark",
+							"__identifier": "ENTITY_PRESET_SHARK",
 							"__grid": [25,19],
 							"__pivot": [0.5,0.5],
 							"__tags": [],
@@ -7388,7 +7388,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "e8702df2-5110-11ed-a17f-37bff6dff1f9",
 					"levelId": 84,
 					"layerDefUid": 1,
@@ -7804,7 +7804,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "e8702df3-5110-11ed-a17f-5b155f2c9df4",
 					"levelId": 84,
 					"layerDefUid": 68,
@@ -7860,7 +7860,7 @@
 					"__pxTotalOffsetX": 0,
 					"__pxTotalOffsetY": 0,
 					"__tilesetDefUid": 2,
-					"__tilesetRelPath": "assets/terrain.png",
+					"__tilesetRelPath": "terrain.png",
 					"iid": "e8702df4-5110-11ed-a17f-a9c2f932727d",
 					"levelId": 84,
 					"layerDefUid": 45,
