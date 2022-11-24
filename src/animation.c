@@ -92,6 +92,7 @@ void animation_new(Animation *anim, Animations anim_config) {
 void animation_update(Animation *anim, float delta) {
     anim->timer += delta;
     if (anim->timer >= anim->config->frame_time / anim->speed_scale) {
+        anim->timer = 0.0f;
         switch (anim->config->dir) {
             case ANIMDIR_FORWARD:
             anim->frame += 1;

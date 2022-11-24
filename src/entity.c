@@ -63,6 +63,9 @@ void entity_update(Entity *entity, float delta) {
         entity->update_func(entity, delta);
     }
 
+    // Update entity animation
+    animation_update(&entity->animation, delta);
+
     // Run physics and move
     entity->position = Vector2Add(entity->position, Vector2Scale(entity->velocity, delta));
     
@@ -87,8 +90,6 @@ void entity_draw(Entity *entity) {
             .y = dest.height / 2,
         },
         entity->rotation,
-        (Color) {
-            .r = 255, .g = 255, .b = 255, .a = 255,
-        }
+        WHITE
     );
 }

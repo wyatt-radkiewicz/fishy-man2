@@ -1,10 +1,11 @@
+#define RAYMATH_IMPLEMENTATION
 #include <raylib.h>
 #include <raymath.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "game.h"
-#include "cLDtk/cLDtk.h"
+#include "world.h"
 
 GameState current_state = GAMESTATE_LEVEL;
 Entity **entities = NULL;
@@ -30,6 +31,7 @@ int main(int argc, char **argv) {
     entity_list_new();
 
     camera_new(&camera, (Vector2){ .x = 128.0f, .y = 128.0f });
+    world_setup();
     game_spawn_entity(ENTITY_PRESET_FISHYMAN, Vector2Zero());
 
     while (!WindowShouldClose()) {
@@ -38,11 +40,14 @@ int main(int argc, char **argv) {
         BeginDrawing();
         ClearBackground((Color){ .r = 205, .g = 212, .b = 165, .a = 255 });
         camera_update(&camera, GetScreenWidth(), GetScreenHeight());
+        world_draw_background();
         draw_entities();
+        world_draw_foreground();
         EndDrawing();
     }
 
     entity_list_drop();
+    world_free();
     unload_assets();
     CloseWindow();
 }
@@ -85,16 +90,10 @@ void game_despawn_entity(Entity *entity) {
 static void load_assets(void) {
     entity_texture = LoadTexture("res/entities.png");
     terrain_texture = LoadTexture("res/terrain.png");
-    loadJSONFile("{\"jsonVersion\":\"1.1.3\"}","res/world.ldtk");
-    importMapData();
 }
 static void unload_assets(void) {
     UnloadTexture(entity_texture);
     UnloadTexture(terrain_texture);
-
-    freeMapData();
-    json_value_free(schema);
-    json_value_free(user_data);
 }
 static void entity_list_new(void) {
     entity_capacity = 64;
