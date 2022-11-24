@@ -1,3 +1,4 @@
 [submodule "src/cLDtk"]
 	path = src/cLDtk
 	url = https://github.com/wyatt-radkiewicz/cLDtk.git
+	branch = main
