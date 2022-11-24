@@ -3,6 +3,7 @@
 
 #include "entity.h"
 #include "game.h"
+#include "world.h"
 #include <raymath.h>
 
 #include "entities/fishyman.h"
@@ -20,6 +21,8 @@ static const char *ident_to_preset[ENTITY_PRESET_MAX] = {
     "ENTITY_PRESET_MEGA_DOUGHNUT",
     "ENTITY_PRESET_CHECKPOINT",
 };
+
+static void entity_process_physics(Entity *entity, float delta);
 
 EntityPreset entity_preset_from_identifier(const char *ident) {
     for (int i = 0; i < ENTITY_PRESET_MAX; i++) {
@@ -40,6 +43,7 @@ Entity *entity_preset(EntityPreset preset, Vector2 pos) {
         case ENTITY_PRESET_BUBBLE:
         entity_new(entity, bubble_update, pos, (rand() & 4) ? ANIM_BUBBLE : ANIM_BUBBLE_SMALL, 0.0f, false, NULL, true);
         entity->tint.a = 0;
+        entity->scale = 0.0f;
         entity->priority = true;
         break;
         case ENTITY_PRESET_BUBBLE_SPAWNER:
@@ -85,16 +89,15 @@ void entity_update(Entity *entity, float delta) {
     animation_update(&entity->animation, delta);
 
     // Run physics and move
-    entity->position = Vector2Add(entity->position, Vector2Scale(entity->velocity, delta));
-    
+    entity_process_physics(entity, delta);
 }
 void entity_draw(Entity *entity) {
     float scaled_width = (float)(entity->animation.config->width) * entity->scale;
     float scaled_height = (float)(entity->animation.config->height) * entity->scale;
 
     Rectangle dest = camera_transform_rect(&camera, (Rectangle) {
-        .x = entity->position.x - scaled_width / 2.0f,
-        .y = entity->position.y - scaled_height / 2.0f,
+        .x = entity->position.x,
+        .y = entity->position.y,
         .width = scaled_width,
         .height = scaled_height,
     });
@@ -113,4 +116,43 @@ void entity_draw(Entity *entity) {
         entity->rotation,
         entity->tint
     );
+}
+
+static void entity_process_physics(Entity *entity, float delta) {
+    entity->position = Vector2Add(entity->position, Vector2Scale(entity->velocity, delta));
+    
+    if (!entity->collide_with_others) {
+        return;
+    }
+
+    float radius = entity->radius * entity->scale;
+    Rectangle rects[MAX_COLLISION_TILES];
+    world_get_colliding_tiles(rects, entity->position.x, entity->position.y, radius);
+    for (Rectangle *rect = rects; rect->width > 0.0f; rect += 1) {
+        float left_margin = entity->position.x - (rect->x - radius);
+        float right_margin = (rect->x + rect->width + radius) - entity->position.x;
+        float top_margin = entity->position.y - (rect->y - radius);
+        float bottom_margin = (rect->y + rect->height + radius) - entity->position.y;
+        if (left_margin < right_margin && left_margin < top_margin && left_margin < bottom_margin) {
+            entity->position.x = rect->x - radius;
+            if (entity->velocity.x > 0.0f && left_margin > 0.0f) {
+                entity->velocity.x = 0.0f;
+            }
+        } else if (right_margin < left_margin && right_margin < top_margin && right_margin < bottom_margin) {
+            entity->position.x = rect->x + rect->width + radius;
+            if (entity->velocity.x < 0.0f && right_margin > 0.0f) {
+                entity->velocity.x = 0.0f;
+            }
+        } else if (top_margin < left_margin && top_margin < right_margin && top_margin < bottom_margin) {
+            entity->position.y = rect->y - radius;
+            if (entity->velocity.y > 0.0f) {
+                entity->velocity.y = 0.0f;
+            }
+        } else if (bottom_margin < left_margin && bottom_margin < top_margin && bottom_margin < top_margin) {
+            entity->position.y = rect->y + rect->height + radius;
+            if (entity->velocity.y < 0.0f) {
+                entity->velocity.y = 0.0f;
+            }
+        }
+    }
 }

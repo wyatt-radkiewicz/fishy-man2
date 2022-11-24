@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     load_assets();
     entity_list_new();
 
-    camera_new(&camera, (Vector2){ .x = 128.0f, .y = 128.0f });
+    camera_new(&camera, (Vector2){ .x = 192.0f, .y = 128.0f });
     world_setup();
     world_spawn_entities_for_current_level();
 

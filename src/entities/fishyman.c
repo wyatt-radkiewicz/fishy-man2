@@ -44,7 +44,13 @@ void fishyman_update(Entity *entity, float delta) {
     float speed_percent = 
         Vector2Length(entity->velocity) /
         Vector2Length((Vector2){ .x = data->speed, .y = data->speed });
-    entity->rotation = entity->velocity.y / data->speed * 10.0f * (entity->flipx ? -1.0f : 1.0f);
+    {
+        float target = fabsf(entity->velocity.y / data->speed) < 0.2f ? 0.0f : (entity->velocity.y / data->speed);
+        data->rotation = (target - data->rotation) * 32.0f * delta + data->rotation;
+        if (fabsf(data->rotation - target) < 0.01f)
+            data->rotation = target;
+        entity->rotation = data->rotation * 10.0f * (entity->flipx ? -1.0f : 1.0f);
+    }
     entity->animation.speed_scale = speed_percent * 1.5f + 1.0f;
     entity->velocity.x = fminf(data->speed, fmaxf(entity->velocity.x, -data->speed));
     entity->velocity.y = fminf(data->speed, fmaxf(entity->velocity.y, -data->speed));
@@ -89,6 +95,8 @@ FishyManData *fishyman_data_new(void) {
     data->speed = 8.0f * 4.0f;
     data->accel = data->speed * 8.0f;
     data->decel = data->speed * 4.0f;
+    data->bubble_timer = 0.0f;
+    data->rotation = 0.0f;
 
     return data;
 }

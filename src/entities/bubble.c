@@ -11,9 +11,9 @@ void bubble_update(Entity *entity, float delta) {
     data->time_left -= delta;
     if (data->time_left > 0.0f) {
         if (entity->scale < 1.0f) {
-            float addition = fmaxf(data->lifetime * 10.0f * delta, 10.0f);
-            entity->scale += addition;
-            entity->tint.a = (uint8_t)((data->lifetime - data->time_left) * addition);
+            float addition = fminf(data->lifetime * 5.0f, 5.0f);
+            entity->scale += addition * delta;
+            entity->tint.a = (uint8_t)((data->lifetime - data->time_left) * addition * 255.0f);
         } else {
             entity->scale = 1.0f;
             entity->tint.a = 255;

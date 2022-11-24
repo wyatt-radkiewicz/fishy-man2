@@ -6,6 +6,7 @@ typedef struct FishyManData {
     float accel;
     float decel;
 
+    float rotation;
     float bubble_timer;
 } FishyManData;
 
