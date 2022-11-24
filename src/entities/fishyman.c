@@ -96,7 +96,7 @@ void fishyman_update(Entity *entity, float delta) {
     }
 
     // Camera
-    camera.position = Vector2Add(camera.position, Vector2Scale(Vector2Subtract(entity->position, camera.position), 50.0f * delta));
+    camera.position = Vector2Add(camera.position, Vector2Scale(Vector2Subtract(entity->position, camera.position), 25.0f * delta));
     if (camera.position.x - camera.dimen.x * camera.scale / 2.0f < (float)current_level->worldX) {
         camera.position.x = (float)current_level->worldX + camera.dimen.x * camera.scale / 2.0f;
     }
@@ -111,18 +111,7 @@ void fishyman_update(Entity *entity, float delta) {
     }
 
     // Be level bound.
-    if (entity->position.x - entity->radius * entity->scale / 2.0f < (float)current_level->worldX) {
-        entity->position.x = (float)current_level->worldX + entity->radius * entity->scale / 2.0f;
-    }
-    if (entity->position.x + entity->radius * entity->scale / 2.0f > (float)current_level->worldX + (float)current_level->pxWid) {
-        entity->position.x = (float)current_level->worldX + (float)current_level->pxWid - entity->radius * entity->scale / 2.0f;
-    }
-    if (entity->position.y - entity->radius * entity->scale / 2.0f < (float)current_level->worldY) {
-        entity->position.y = (float)current_level->worldY + entity->radius * entity->scale / 2.0f;
-    }
-    if (entity->position.y + entity->radius * entity->scale / 2.0f > (float)current_level->worldY + (float)current_level->pxHei) {
-        entity->position.y = (float)current_level->worldY + (float)current_level->pxHei - entity->radius * entity->scale / 2.0f;
-    }
+    entity_bound_to_level(entity, 0.0f);
 
     // Start level transitions
     try_transition(entity, false, 1.0f);

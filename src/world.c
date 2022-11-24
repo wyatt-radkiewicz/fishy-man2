@@ -23,6 +23,7 @@ static int floor_anim_frame = 0;
 static int rock_anim_frame = 0;
 static float lock_anim = 0.0f;
 
+static Rectangle world_get_bound_from_grid(int px, int py, int *col);
 static void draw_autolayer(struct layerInstances *layer, float offset_x, float offset_y);
 static void free_collisions(void);
 static void build_collisions(void);
@@ -189,6 +190,41 @@ void world_unlock_doors(void) {
             collisions[i] = 0;
         }
     }
+}
+
+#include "entities/bubble.h"
+bool world_line_colliding(Vector2 start, Vector2 end) {
+    int sx = (int)start.x / 8;
+    int sy = (int)start.y / 8;
+    int ex = (int)end.x / 8;
+    int ey = (int)end.y / 8;
+    int col = 0;
+    int diry = (end.y - start.y > 0) ? 1 : -1;
+    int dirx = (end.x - start.x > 0) ? 1 : -1;
+    float y_step = (float)(ey - sy) / fabsf((float)(ex - sx));
+    float x_step = (float)(ex - sx) / fabsf((float)(ey - sy));
+
+    if (fabsf(y_step) <= 1.0f) {
+        float y = sy;
+        for (int x = sx; x != ex + dirx && (int)y != ey + diry; x += dirx) {
+            world_get_bound_from_grid(x * 8, (int)y * 8, &col);
+            if (col) {
+                return true;
+            }
+            y += y_step;
+        }
+    } else {
+        float x = sx;
+        for (int y = sy; y != ey + diry && (int)x != ex + dirx; y += diry) {
+            world_get_bound_from_grid((int)x * 8, y * 8, &col);
+            if (col) {
+                return true;
+            }
+            x += x_step;
+        }
+    }
+
+    return false;
 }
 
 static void free_collisions(void) {

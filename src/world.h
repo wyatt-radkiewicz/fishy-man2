@@ -37,5 +37,6 @@ void world_despawn_entities_for_level(int levelUid);
 int world_get_colliding_tiles(TileCollision collisions[MAX_TILE_COLLISIONS], float x, float y, float r);
 void world_unlock_doors(void);
 int world_get_level_num(struct levels *level);
+bool world_line_colliding(Vector2 start, Vector2 end);
 
 #endif

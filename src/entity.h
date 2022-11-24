@@ -47,4 +47,7 @@ void entity_drop(Entity *entity);
 void entity_update(Entity *entity, float delta);
 void entity_draw(Entity *entity);
 
+bool entity_lineofsight(Entity *entity, Entity *target);
+void entity_bound_to_level(Entity *entity, float padding);
+
 #endif

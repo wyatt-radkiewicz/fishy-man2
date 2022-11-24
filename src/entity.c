@@ -10,6 +10,7 @@
 #include "entities/bubble.h"
 #include "entities/bubble_spawner.h"
 #include "entities/doughnut.h"
+#include "entities/shark.h"
 
 static const char *ident_to_preset[ENTITY_PRESET_MAX] = {
     "ENTITY_PRESET_UNKOWN_IDENTIFIER",
@@ -52,6 +53,9 @@ Entity *entity_preset(EntityPreset preset, Vector2 pos) {
         break;
         case ENTITY_PRESET_DOUGHNUT:
         entity_new(entity, doughnut_update, pos, ANIM_DOUGHNUT, 4.0f, false, doughnut_data_new(pos.y), true);
+        break;
+        case ENTITY_PRESET_SHARK:
+        entity_new(entity, shark_update, pos, ANIM_SHARK, 7.0f, true, shark_data_new(pos), true);
         break;
         default:
         entity_new(entity, NULL, pos, ANIM_NONE, 0.0f, false, NULL, false);
@@ -120,6 +124,34 @@ void entity_draw(Entity *entity) {
         entity->rotation,
         entity->tint
     );
+}
+
+bool entity_lineofsight(Entity *entity, Entity *target) {
+    return
+        !world_line_colliding(Vector2Add(entity->position, (Vector2){ .x = 0.0f, .y = -4.0f }),
+            Vector2Add(target->position, (Vector2){ .x = 0.1f, .y = -4.0f })) ||
+        !world_line_colliding(Vector2Add(entity->position, (Vector2){ .x = 0.0f, .y = 0.0f }),
+            Vector2Add(target->position, (Vector2){ .x = 0.0f, .y = 0.0f })) ||
+        !world_line_colliding(Vector2Add(entity->position, (Vector2){ .x = 0.0f, .y = 4.0f }),
+            Vector2Add(target->position, (Vector2){ .x = -0.1f, .y = 4.0f }));
+}
+void entity_bound_to_level(Entity *entity, float padding) {
+    if (in_transition && (entity->level_uid == transition_level_uid)) {
+        return;
+    }
+
+    if (entity->position.x - entity->radius * entity->scale / 2.0f < (float)current_level->worldX + padding) {
+        entity->position.x = (float)current_level->worldX + padding + entity->radius * entity->scale / 2.0f;
+    }
+    if (entity->position.x + entity->radius * entity->scale / 2.0f > (float)current_level->worldX + (float)current_level->pxWid - padding) {
+        entity->position.x = (float)current_level->worldX + (float)current_level->pxWid - padding - entity->radius * entity->scale / 2.0f;
+    }
+    if (entity->position.y - entity->radius * entity->scale / 2.0f < (float)current_level->worldY + padding) {
+        entity->position.y = (float)current_level->worldY + padding + entity->radius * entity->scale / 2.0f;
+    }
+    if (entity->position.y + entity->radius * entity->scale / 2.0f > (float)current_level->worldY + (float)current_level->pxHei - padding) {
+        entity->position.y = (float)current_level->worldY + (float)current_level->pxHei - padding - entity->radius * entity->scale / 2.0f;
+    }
 }
 
 static void entity_process_physics(Entity *entity, float delta) {
