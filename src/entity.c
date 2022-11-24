@@ -9,6 +9,7 @@
 #include "entities/fishyman.h"
 #include "entities/bubble.h"
 #include "entities/bubble_spawner.h"
+#include "entities/doughnut.h"
 
 static const char *ident_to_preset[ENTITY_PRESET_MAX] = {
     "ENTITY_PRESET_UNKOWN_IDENTIFIER",
@@ -48,6 +49,9 @@ Entity *entity_preset(EntityPreset preset, Vector2 pos) {
         break;
         case ENTITY_PRESET_BUBBLE_SPAWNER:
         entity_new(entity, bubble_spawner_update, pos, ANIM_NONE, 0.0f, false, bubble_spawner_data_new(), true);
+        break;
+        case ENTITY_PRESET_DOUGHNUT:
+        entity_new(entity, doughnut_update, pos, ANIM_DOUGHNUT, 4.0f, false, doughnut_data_new(pos.y), true);
         break;
         default:
         entity_new(entity, NULL, pos, ANIM_NONE, 0.0f, false, NULL, false);
@@ -125,10 +129,21 @@ static void entity_process_physics(Entity *entity, float delta) {
         return;
     }
 
+    Entity *entity_collisions[32];
+    int num_collisions = game_find_colliding_entities(entity_collisions, 32, entity, true);
+    for (int i = 0; i < num_collisions; i++) {
+        Entity *ent = entity_collisions[i];
+        Vector2 dif = Vector2Subtract(ent->position, entity->position);
+        float len = ((ent->radius + entity->radius) - Vector2Length(dif)) / 2.0f;
+        Vector2 move_dir = Vector2Normalize(dif);
+        entity->position = Vector2Add(entity->position, Vector2Scale(move_dir, -len));
+        ent->position = Vector2Add(ent->position, Vector2Scale(move_dir, len));
+    }
+
     float radius = entity->radius * entity->scale;
     TileCollision collisions[MAX_TILE_COLLISIONS];
-    world_get_colliding_tiles(collisions, entity->position.x, entity->position.y, radius);
-    for (TileCollision *col = collisions; col->col_type; col += 1) {
+    num_collisions = world_get_colliding_tiles(collisions, entity->position.x, entity->position.y, radius);
+    for (TileCollision *col = collisions; col - collisions < num_collisions; col += 1) {
         Rectangle *rect = &col->bounds;
         float left_margin = entity->position.x - (rect->x - radius);
         float right_margin = (rect->x + rect->width + radius) - entity->position.x;

@@ -9,6 +9,7 @@
 
 GameState current_state = GAMESTATE_LEVEL;
 Entity **entities = NULL;
+Entity *global_player = NULL;
 size_t entity_capacity = 0;
 static int64_t current_entity = -1;
 static bool despawn_last_entity = false;
@@ -32,9 +33,11 @@ int main(int argc, char **argv) {
 
     camera_new(&camera, (Vector2){ .x = 192.0f, .y = 128.0f });
     world_setup();
-    world_spawn_entities_for_current_level();
 
     while (!WindowShouldClose()) {
+        if (in_transition && transition_timer <= 0.0f) {
+            world_end_transition();
+        }
         update_entities();
 
         BeginDrawing();
@@ -96,6 +99,21 @@ Entity **game_find_next_entity_of_preset(Entity **iter, EntityPreset preset) {
     }
 
     return NULL;
+}
+int game_find_colliding_entities(Entity **buffer, int length, Entity *a, bool only_colliders) {
+    int curr_ent = 0;
+
+    for (int i = 0; i < entity_capacity; i++) {
+        if (entities[i] && Vector2Distance(entities[i]->position, a->position) < entities[i]->radius + a->radius &&
+            (!only_colliders || (only_colliders && entities[i]->collide_with_others)) && entities[i] != a) {
+            buffer[curr_ent++] = entities[i];
+            if (curr_ent == length) {
+                break;
+            }
+        }
+    }
+
+    return curr_ent;
 }
 
 static void load_assets(void) {

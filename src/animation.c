@@ -21,7 +21,7 @@ const AnimationConfig animations[ANIM_MAX] = {
         .width = 8, .height = 8,
         .frames = 12,
         .dir = ANIMDIR_FORWARD,
-        .frame_time = 1.0 / 5.0,
+        .frame_time = 1.0 / 7.0,
     },
     (AnimationConfig){  // ANIM_SHARK
         .base_x = 0, .base_y = 16,

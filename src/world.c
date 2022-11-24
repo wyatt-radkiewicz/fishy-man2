@@ -11,6 +11,8 @@ int last_level_id = -1, current_level_uid = -1, transition_level_uid = -1;
 struct levels *current_level, *transition_level;
 bool in_transition = false;
 struct layerInstances *current_intGrid;
+int current_doughnuts_left = 0;
+float transition_timer = 0.0f;
 
 static int *collisions = NULL;
 
@@ -18,6 +20,7 @@ static float next_floor_anim = 3.0f;
 static float next_rock_anim = 6.0f;
 static int floor_anim_frame = 0;
 static int rock_anim_frame = 0;
+static float lock_anim = 0.0f;
 
 static void draw_autolayer(struct layerInstances *layer, float offset_x, float offset_y);
 static void free_collisions(void);
@@ -38,6 +41,10 @@ void world_free(void) {
 }
 void world_draw_background(void) {
     draw_autolayer(getLayer("Background", current_level->uid), (float)current_level->worldX, (float)current_level->worldY);
+
+    if (in_transition) {
+        draw_autolayer(getLayer("Background", transition_level_uid), (float)transition_level->worldX, (float)transition_level->worldY);
+    }
 }
 void world_draw_foreground(void) {
     float x = (float)current_level->worldX;
@@ -49,14 +56,29 @@ void world_draw_foreground(void) {
     int rock_frame = (int)(next_floor_anim * 4.0f);
     floor_anim_frame = (floor_frame < 12) ? floor_frame : 0;
     rock_anim_frame = (rock_frame < 5) ? rock_frame : 0;
+    if (!in_transition && current_doughnuts_left == 0) {
+        lock_anim += GetFrameTime();
+    }
 
     draw_autolayer(getLayer("Locks", current_level->uid), x, y);
     draw_autolayer(getLayer("Collisions", current_level->uid), x, y);
+
+    if (in_transition) {
+        transition_timer -= GetFrameTime();
+        x = (float)transition_level->worldX;
+        y = (float)transition_level->worldY;
+        draw_autolayer(getLayer("Locks", transition_level->uid), x, y);
+        draw_autolayer(getLayer("Collisions", transition_level->uid), x, y);
+    }
 }
 void world_start_transition(int levelUid) {
-    in_transition = true;
-    transition_level_uid = levelUid;
-    transition_level = getLevelFromUid(levelUid);
+    if (levelUid != current_level_uid && levelUid != transition_level_uid) {
+        in_transition = true;
+        transition_level_uid = levelUid;
+        transition_level = getLevelFromUid(levelUid);
+        transition_timer = 0.5f;
+        world_spawn_entities_for_level(transition_level_uid);
+    }
 }
 void world_end_transition(void) {
     in_transition = false;
@@ -66,8 +88,10 @@ void world_end_transition(void) {
     current_intGrid = getLayer("Collisions", current_level_uid);
     free_collisions();
     build_collisions();
+    world_despawn_entities_for_level(last_level_id);
     transition_level = NULL;
-    transition_level_uid = 0;
+    transition_level_uid = -1;
+    lock_anim = 0.0f;
 }
 
 static void draw_autolayer(struct layerInstances *layer, float offset_x, float offset_y) {
@@ -85,6 +109,13 @@ static void draw_autolayer(struct layerInstances *layer, float offset_x, float o
         }
         if (x == 0 && y == 48) {
             x += floor_anim_frame * 8;
+        }
+        if ((x == 80 || x == 88) && y == 40) {
+            int frame = (int)(lock_anim * 8.0f);
+            if (frame > 6) {
+                frame = 6;
+            }
+            x += frame * 8;
         }
 
         Rectangle dest = camera_transform_rect(&camera, (Rectangle){
@@ -112,28 +143,45 @@ static void draw_autolayer(struct layerInstances *layer, float offset_x, float o
         );
     }
 }
-void world_spawn_entities_for_current_level(void) {
-    struct layerInstances *layer = getLayer("Entities", current_level_uid);
+void world_spawn_entities_for_level(int levelUid) {
+    struct levels *level = getLevelFromUid(levelUid);
+    struct layerInstances *layer = getLayer("Entities", levelUid);
     struct entityInstances *ents = layer->entityInstances_data_ptr;
+    current_doughnuts_left = 0;
     for (int i = 0; i < layer->numEntityInstancesDataPtr; i++) {
         EntityPreset preset = entity_preset_from_identifier(ents[i].identifier);
         if (preset == ENTITY_PRESET_FISHYMAN && game_find_next_entity_of_preset(entities, ENTITY_PRESET_FISHYMAN)) {
             break;
         }
 
+        if (preset == ENTITY_PRESET_DOUGHNUT) {
+            current_doughnuts_left += 1;
+        } else if (preset == ENTITY_PRESET_MEGA_DOUGHNUT) {
+            current_doughnuts_left += 2;
+        }
+
         Entity *ent = game_spawn_entity(preset, (Vector2){
-            .x = (float)ents[i].x + (float)current_level->worldX,
-            .y = (float)ents[i].y + (float)current_level->worldY,
+            .x = (float)ents[i].x + (float)level->worldX,
+            .y = (float)ents[i].y + (float)level->worldY,
         });
         if (ent->original_preset != ENTITY_PRESET_FISHYMAN) {
-            ent->level_uid = current_level_uid;
+            ent->level_uid = levelUid;
+        } else {
+            global_player = ent;
         }
     }
 }
-void world_despawn_entities_for_last_level(void) {
+void world_despawn_entities_for_level(int levelUid) {
     for (int i = 0; i < entity_capacity; i++) {
-        if (entities[i]->level_uid == last_level_id) {
+        if (entities[i] && entities[i]->level_uid == levelUid && entities[i]->original_preset != ENTITY_PRESET_FISHYMAN) {
             game_despawn_entity(entities[i]);
+        }
+    }
+}
+void world_unlock_doors(void) {
+    for (int i = 0; i < current_intGrid->cWid * current_intGrid->cHei; i++) {
+        if (collisions[i] & IS_LOCK) {
+            collisions[i] = 0;
         }
     }
 }
@@ -144,13 +192,19 @@ static void free_collisions(void) {
 static void build_collisions(void) {
     collisions = calloc(current_intGrid->cWid * current_intGrid->cHei, sizeof(int));
 
+    struct layerInstances *locks_layer = getLayer("Locks", current_level_uid);
+
     for (int y = 0; y < current_intGrid->cHei; y++) {
         for (int x = 0; x < current_intGrid->cWid; x++) {
             int *col = &collisions[y * current_intGrid->cWid + x];
             *col = current_intGrid->intGrid[y * current_intGrid->cWid + x] ? IS_SOLID : 0;
 
+            if (!(*col) && locks_layer->intGrid[y * locks_layer->cWid + x]) {
+                *col = IS_SOLID | IS_LOCK;
+            }
+
             // Check neighbors
-            if (*col) {
+            if (*col && ~(*col) & IS_LOCK) {
                 bool left = x > 0 ? current_intGrid->intGrid[y * current_intGrid->cWid + (x - 1)] : true;
                 bool right = x < current_intGrid->cWid - 1 ? current_intGrid->intGrid[y * current_intGrid->cWid + (x + 1)] : true;
                 bool top = y > 0 ? current_intGrid->intGrid[(y - 1) * current_intGrid->cWid + x] : true;
@@ -202,7 +256,7 @@ int sort_rect(const TileCollision *a, const TileCollision *b) {
     }
 }
 
-void world_get_colliding_tiles(TileCollision collisions[MAX_TILE_COLLISIONS], float x, float y, float r) {
+int world_get_colliding_tiles(TileCollision collisions[MAX_TILE_COLLISIONS], float x, float y, float r) {
     int curr_rect = 0, col;
     memset(collisions, 0, sizeof(TileCollision) * MAX_TILE_COLLISIONS);
 
@@ -233,7 +287,7 @@ void world_get_colliding_tiles(TileCollision collisions[MAX_TILE_COLLISIONS], fl
 
                 collisions[curr_rect].bounds = rect;
                 collisions[curr_rect++].col_type = col;
-                if (curr_rect == MAX_TILE_COLLISIONS - 1) {
+                if (curr_rect == MAX_TILE_COLLISIONS) {
                     break;
                 }
             }
@@ -242,5 +296,6 @@ void world_get_colliding_tiles(TileCollision collisions[MAX_TILE_COLLISIONS], fl
 
     origin = (Vector2){ .x = x, .y = y };
     qsort(collisions, 8, sizeof(TileCollision), (int(*)(const void *, const void *))sort_rect);
+    return curr_rect;
 }
 

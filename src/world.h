@@ -12,6 +12,7 @@
 #define ROUND_TOPRIGHT 4
 #define ROUND_BOTTOMLEFT 8
 #define ROUND_BOTTOMRIGHT 16
+#define IS_LOCK 32
 
 typedef struct TileCollision {
     Rectangle bounds;
@@ -21,6 +22,8 @@ typedef struct TileCollision {
 extern int last_level_id, current_level_uid, transition_level_uid;
 extern struct levels *current_level, *transition_level;
 extern bool in_transition;
+extern float transition_timer;
+extern int current_doughnuts_left;
 
 void world_setup(void);
 void world_free(void);
@@ -28,8 +31,9 @@ void world_draw_background(void);
 void world_draw_foreground(void);
 void world_start_transition(int levelUid);
 void world_end_transition(void);
-void world_spawn_entities_for_current_level(void);
-void world_despawn_entities_for_last_level(void);
-void world_get_colliding_tiles(TileCollision collisions[MAX_TILE_COLLISIONS], float x, float y, float r);
+void world_spawn_entities_for_level(int levelUid);
+void world_despawn_entities_for_level(int levelUid);
+int world_get_colliding_tiles(TileCollision collisions[MAX_TILE_COLLISIONS], float x, float y, float r);
+void world_unlock_doors(void);
 
 #endif

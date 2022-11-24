@@ -2,14 +2,23 @@
 #include <math.h>
 
 #include "bubble.h"
+#include "doughnut.h"
 #include "../entity.h"
 #include "fishyman.h"
 #include "../game.h"
 #include <raymath.h>
 #include "../world.h"
 
+static void try_transition(Entity *entity, bool vertical, float dir);
+
 void fishyman_update(Entity *entity, float delta) {
     FishyManData *data = entity->custom_data;
+
+    if (in_transition) {
+        camera.position = Vector2Add(camera.position, Vector2Scale(Vector2Subtract(data->camera_transition_target, camera.position), 20.0f * delta));
+        entity->position = Vector2Add(entity->position, Vector2Scale(data->transition_movement_dir, delta * 32.0f));
+        return;
+    }
 
     if (IsKeyDown(KEY_RIGHT)) {
         entity->velocity.x += data->accel * (entity->velocity.x < 0.0f ? 2.0f : 1.0f) * delta;
@@ -73,9 +82,19 @@ void fishyman_update(Entity *entity, float delta) {
         );
     }
 
-    camera.position = Vector2Add(camera.position, Vector2Scale(Vector2Subtract(entity->position, camera.position), 0.5f));
+    // Collect doughnuts
+    Entity *doughnuts[32];
+    int num_doughnuts = game_find_colliding_entities(doughnuts, 32, entity, false);
+    for (int i = 0; i < num_doughnuts; i++) {
+        Entity *ent = doughnuts[i];
 
-    // Clip the camera bounds
+        if (ent->original_preset == ENTITY_PRESET_DOUGHNUT) {
+            doughnut_eat(ent);
+        }
+    }
+
+    // Camera
+    camera.position = Vector2Add(camera.position, Vector2Scale(Vector2Subtract(entity->position, camera.position), 50.0f * delta));
     if (camera.position.x - camera.dimen.x * camera.scale / 2.0f < (float)current_level->worldX) {
         camera.position.x = (float)current_level->worldX + camera.dimen.x * camera.scale / 2.0f;
     }
@@ -88,13 +107,75 @@ void fishyman_update(Entity *entity, float delta) {
     if (camera.position.y + camera.dimen.y * camera.scale / 2.0f > (float)current_level->worldY + (float)current_level->pxHei) {
         camera.position.y = (float)current_level->worldY + (float)current_level->pxHei - camera.dimen.y * camera.scale / 2.0f;
     }
-    
+
+    // Start level transitions
+    try_transition(entity, false, 1.0f);
+    try_transition(entity, false, -1.0f);
+    try_transition(entity, true, 1.0f);
+    try_transition(entity, true, -1.0f);
 }
+
+static void try_transition(Entity *entity, bool vertical, float dir) {
+    FishyManData *data = entity->custom_data;
+
+    if (vertical) {
+        if (entity->position.y + dir * 5.0f > (float)current_level->worldY + (float)current_level->pxHei ||
+            entity->position.y + dir * 5.0f < (float)current_level->worldY) {
+            for (int i = 0; i < current_level->numNeighbors; i++) {
+                    struct levels *level = getLevelFromUid((float)current_level->neighbors[i].uid);
+                    if (entity->position.x > (float)level->worldX &&
+                        entity->position.x < (float)level->worldX + (float)level->pxWid &&
+                        entity->position.y + dir * 16.0f > (float)level->worldY &&
+                        entity->position.y + dir * 16.0f < (float)level->worldY + (float)level->pxHei) {
+                        if (dir > 0.0f) {
+                            data->camera_transition_target.y = (float)level->worldY + camera.dimen.y * camera.scale / 2.0f;
+                        } else {
+                            data->camera_transition_target.y = (float)level->worldY + (float)level->pxHei - camera.dimen.y * camera.scale / 2.0f;
+                        }
+                        data->camera_transition_target.x = camera.position.x;
+                        entity->velocity = Vector2Zero();
+                        data->transition_movement_dir = (Vector2){
+                            .x = 0.0f, .y = dir,
+                        };
+                        world_start_transition(level->uid);
+                        break;
+                    }
+            }
+        }
+    } else {
+        if (entity->position.x + dir * 5.0f > (float)current_level->worldX + (float)current_level->pxWid ||
+            entity->position.x + dir * 5.0f < (float)current_level->worldX) {
+            for (int i = 0; i < current_level->numNeighbors; i++) {
+                    struct levels *level = getLevelFromUid((float)current_level->neighbors[i].uid);
+                    if (entity->position.x + dir * 16.0f > (float)level->worldX &&
+                        entity->position.x + dir * 16.0f < (float)level->worldX + (float)level->pxWid &&
+                        entity->position.y > (float)level->worldY &&
+                        entity->position.y < (float)level->worldY + (float)level->pxHei) {
+                        if (dir > 0.0f) {
+                            data->camera_transition_target.x = (float)level->worldX + camera.dimen.x * camera.scale / 2.0f;
+                        } else {
+                            data->camera_transition_target.x = (float)level->worldX + (float)level->pxWid - camera.dimen.x * camera.scale / 2.0f;
+                        }
+                        data->camera_transition_target.y = camera.position.y;
+                        entity->velocity = Vector2Zero();
+                        data->transition_movement_dir = (Vector2){
+                            .x = dir, .y = 0.0f,
+                        };
+                        world_start_transition(level->uid);
+                        break;
+                    }
+            }
+        }
+    }
+}
+
+#define SPEED_MULTIPLIER 2.0f
+
 FishyManData *fishyman_data_new(void) {
     FishyManData *data = malloc(sizeof(FishyManData));
-    data->speed = 8.0f * 4.0f;
-    data->accel = data->speed * 8.0f;
-    data->decel = data->speed * 4.0f;
+    data->speed = 8.0f * 4.0f * SPEED_MULTIPLIER;
+    data->accel = data->speed * 8.0f * SPEED_MULTIPLIER;
+    data->decel = data->speed * 4.0f * SPEED_MULTIPLIER;
     data->bubble_timer = 0.0f;
     data->rotation = 0.0f;
 
