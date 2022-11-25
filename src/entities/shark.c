@@ -139,7 +139,7 @@ SharkData *shark_data_new(Vector2 spawn_pos) {
     data->last_seen_pos = spawn_pos;
     data->last_seen_dir = Vector2Zero();
     data->home_size = 12.0f;
-    data->max_chase_speed = 64.0f * 1.1f;
+    data->max_chase_speed = 64.0f;// * 1.04f;
     data->speed = 0.0f;
     data->timer = 0.0f;
     data->target = spawn_pos;
