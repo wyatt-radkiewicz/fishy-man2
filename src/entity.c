@@ -13,6 +13,7 @@
 #include "entities/shark.h"
 #include "entities/ghost_shark.h"
 #include "entities/checkpoint.h"
+#include "entities/fishyman_guts.h"
 
 static const char *ident_to_preset[ENTITY_PRESET_MAX] = {
     "ENTITY_PRESET_UNKOWN_IDENTIFIER",
@@ -24,6 +25,7 @@ static const char *ident_to_preset[ENTITY_PRESET_MAX] = {
     "ENTITY_PRESET_GHOST_SHARK",
     "ENTITY_PRESET_MEGA_DOUGHNUT",
     "ENTITY_PRESET_CHECKPOINT",
+    "ENTITY_PRESET_FISHYMAN_GUTS",
 };
 
 static void entity_process_physics(Entity *entity, float delta);
@@ -54,7 +56,11 @@ Entity *entity_preset(EntityPreset preset, Vector2 pos) {
         entity_new(entity, bubble_spawner_update, pos, ANIM_NONE, 0.0f, false, bubble_spawner_data_new(), true);
         break;
         case ENTITY_PRESET_DOUGHNUT:
-        entity_new(entity, doughnut_update, pos, ANIM_DOUGHNUT, 4.0f, false, doughnut_data_new(pos.y), true);
+        entity_new(entity, doughnut_update, pos, ANIM_DOUGHNUT, 4.0f, false, doughnut_data_new(pos.y, false), true);
+        entity->priority = PRIORITY_HI;
+        break;
+        case ENTITY_PRESET_MEGA_DOUGHNUT:
+        entity_new(entity, doughnut_update, pos, ANIM_DOUGHNUT, 8.0f, false, doughnut_data_new(pos.y, true), true);
         entity->priority = PRIORITY_HI;
         break;
         case ENTITY_PRESET_SHARK:
@@ -65,8 +71,11 @@ Entity *entity_preset(EntityPreset preset, Vector2 pos) {
         entity->priority = PRIORITY_HI;
         break;
         case ENTITY_PRESET_CHECKPOINT:
-        entity_new(entity, checkpoint_update, pos, ANIM_CHECKPOINT, 16.0f, false, NULL, false);
+        entity_new(entity, checkpoint_update, pos, ANIM_CHECKPOINT, 16.0f, false, checkpoint_data_new(), true);
         entity->priority = PRIORITY_LOW;
+        break;
+        case ENTITY_PRESET_FISHYMAN_GUTS:
+        entity_new(entity, fishyman_guts_update, pos, ANIM_FISHYMAN_GUTS, 0.0f, false, NULL, true);
         break;
         default:
         entity_new(entity, NULL, pos, ANIM_NONE, 0.0f, false, NULL, false);

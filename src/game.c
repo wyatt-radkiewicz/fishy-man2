@@ -20,6 +20,7 @@ GameCamera camera;
 
 Texture2D entity_texture;
 Texture2D terrain_texture;
+Texture2D wipe_texture;
 
 static void load_assets(void);
 static void unload_assets(void);
@@ -49,6 +50,9 @@ int main(int argc, char **argv) {
                 death_state = 2;
             }
         } else if (death_state == 2) {
+            if (in_transition) {
+                world_end_transition();
+            }
             for (int i = 0; i < entity_capacity; i++) {
                 game_despawn_entity(entities[i]);
             }
@@ -56,17 +60,18 @@ int main(int argc, char **argv) {
             world_spawn_entities_for_level(last_level_uid_checkpoint);
             camera.position = global_player->position;
             camera_clip_to_level(&camera);
+            //update_entities();
 
             death_state = 3;
         } else if (death_state == 3) {
-            if (death_timer <= -1.0f) {
+            if (death_timer <= DEATH_DURATION / -2.0f) {
                 death_state = 0;
             }
         } else if (in_transition && transition_timer <= 0.0f) {
             world_end_transition();
         }
 
-        if (death_state < 1) {
+        if (death_state < 2) {
             update_entities();
         }
 
@@ -84,20 +89,16 @@ int main(int argc, char **argv) {
         draw_entities(PRIORITY_HI);
 
         if (death_state > 0) {
-            float y = GetScreenHeight() - (int)(death_timer * 2.0f * (float)GetScreenHeight());
+            float y = ((death_timer / DEATH_DURATION) + 0.5f) * (384.0f + camera.dimen.y * camera.scale);
 
-            DrawRectangleGradientV(
-                0, y, GetScreenWidth(), GetScreenHeight(),
-                (Color){ .r = 33, .g = 29, .b = 56, .a = 255 },
-                (Color){ .r = 33, .g = 29, .b = 56, .a = 0 }
-            );
-            DrawRectangle(0.0f, y - GetScreenHeight(), GetScreenWidth(), GetScreenHeight(),
-                (Color){ .r = 33, .g = 29, .b = 56, .a = 255 });
-            DrawRectangleGradientV(
-                0, y - GetScreenHeight() * 2, GetScreenWidth(), GetScreenHeight(),
-                (Color){ .r = 33, .g = 29, .b = 56, .a = 0 },
-                (Color){ .r = 33, .g = 29, .b = 56, .a = 255 }
-            );
+            DrawTextureTiled(wipe_texture, (Rectangle){
+                .x = 0.0f, .y = 0.0f, .width = 16.0f, .height = 384.0f
+            }, camera_transform_rect(&camera, (Rectangle) {
+                .x = camera.position.x - camera.dimen.x * camera.scale / 2.0f,
+                .y = camera.position.y + camera.dimen.y * camera.scale / 2.0f - y,
+                .width = camera.dimen.x * camera.scale,
+                .height = 384.0f,
+            }), (Vector2){ .x = 0.0f, .y = 0.0f }, 0.0f, (float)GetScreenHeight() / (camera.dimen.y * camera.scale), WHITE);
         }
         
         EndDrawing();
@@ -111,7 +112,7 @@ int main(int argc, char **argv) {
 void start_death(void) {
     if (!death_state) {
         death_state = 1;
-        death_timer = 1.0f;
+        death_timer = DEATH_DURATION / 2.0f;
     }
 }
 
@@ -179,10 +180,12 @@ int game_find_colliding_entities(Entity **buffer, int length, Entity *a, bool on
 static void load_assets(void) {
     entity_texture = LoadTexture("res/entities.png");
     terrain_texture = LoadTexture("res/terrain.png");
+    wipe_texture = LoadTexture("res/wipe.png");
 }
 static void unload_assets(void) {
     UnloadTexture(entity_texture);
     UnloadTexture(terrain_texture);
+    UnloadTexture(wipe_texture);
 }
 static void entity_list_new(void) {
     entity_capacity = 64;

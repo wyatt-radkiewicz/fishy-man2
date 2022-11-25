@@ -5,18 +5,35 @@
 #include "doughnut.h"
 #include "../entity.h"
 #include "fishyman.h"
+#include "fishyman_guts.h"
 #include "../game.h"
 #include <raymath.h>
 #include "../world.h"
 
 #define SPEED_MULTIPLIER 2.0f
+#define MAX_SPEED (8.0f * 4.0f * SPEED_MULTIPLIER)
 
 static void try_transition(Entity *entity, bool vertical, float dir);
 
 void fishyman_update(Entity *entity, float delta) {
     FishyManData *data = entity->custom_data;
 
+    if (death_state > 0) {
+        entity->velocity = Vector2Zero();
+        entity->scale -= delta * (DEATH_DURATION * 6.0f);
+        if (entity->scale < 0.0f) {
+            entity->scale = 0.0f;
+        }
+        return;
+    }
+
     if (in_transition) {
+        if (data->is_mega) {
+            data->is_mega = false;
+            data->base_radius = 3.0f;
+            data->speed = MAX_SPEED;
+            animation_new(&entity->animation, ANIM_FISHYMAN_NORMAL);
+        }
         camera.position = Vector2Add(camera.position, Vector2Scale(Vector2Subtract(data->camera_transition_target, camera.position), 20.0f * delta));
         entity->position = Vector2Add(entity->position, Vector2Scale(data->transition_movement_dir, delta * 32.0f));
         return;
@@ -93,6 +110,14 @@ void fishyman_update(Entity *entity, float delta) {
         if (ent->original_preset == ENTITY_PRESET_DOUGHNUT) {
             doughnut_eat(ent);
         }
+
+        if (ent->original_preset == ENTITY_PRESET_MEGA_DOUGHNUT) {
+            doughnut_eat(ent);
+            data->is_mega = true;
+            data->base_radius = 6.0f;
+            data->speed = MAX_SPEED * 2.0f;
+            animation_new(&entity->animation, ANIM_FISHYMAN_MEGA);
+        }
     }
 
     // Camera
@@ -100,16 +125,29 @@ void fishyman_update(Entity *entity, float delta) {
     camera_clip_to_level(&camera);
 
     // Die if we are next to shark!!!
-    entity->radius = 4.0f;
+    entity->radius = data->base_radius + 0.1f;
     Entity *enemies[32];
     int num_enemies = game_find_colliding_entities(enemies, 32, entity, false);
     for (int i = 0; i < num_enemies; i++) {
         if (enemies[i]->original_preset == ENTITY_PRESET_SHARK ||
             enemies[i]->original_preset == ENTITY_PRESET_GHOST_SHARK) {
             start_death();
+
+            // Spawn guts
+            float guts_dir = atan2f(entity->position.y - enemies[i]->position.y, entity->position.x - enemies[i]->position.x);
+            float spread = 45.0f / 180.0f * PI;
+            for (int j = 0; j < 4; j++) {
+                float dir = guts_dir + spread * ((float)rand() / (float)RAND_MAX - 0.5f);
+                Entity *gut = game_spawn_entity(ENTITY_PRESET_FISHYMAN_GUTS, entity->position);
+                gut->custom_data = fishyman_guts_data_new(50.0f, 720.0f);
+                gut->velocity.x = cosf(dir) * 20.0f;
+                gut->velocity.y = sinf(dir) * 20.0f;
+            }
+
+            break;
         }
     }
-    entity->radius = 3.0f;
+    entity->radius = data->base_radius;
 
     // Be level bound.
     entity_bound_to_level(entity, 0.0f);
@@ -179,11 +217,13 @@ static void try_transition(Entity *entity, bool vertical, float dir) {
 
 FishyManData *fishyman_data_new(void) {
     FishyManData *data = malloc(sizeof(FishyManData));
-    data->speed = 8.0f * 4.0f * SPEED_MULTIPLIER;
+    data->speed = MAX_SPEED;
     data->accel = data->speed * 8.0f * SPEED_MULTIPLIER;
     data->decel = data->speed * 4.0f * SPEED_MULTIPLIER;
     data->bubble_timer = 0.0f;
     data->rotation = 0.0f;
+    data->is_mega = false;
+    data->base_radius = 3.0f;
 
     return data;
 }

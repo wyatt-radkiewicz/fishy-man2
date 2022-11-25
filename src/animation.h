@@ -15,6 +15,7 @@ typedef enum Animations {
     ANIM_DOUGHNUT_MEGA,
     ANIM_CHECKPOINT,
     ANIM_FISHYMAN_MEGA,
+    ANIM_FISHYMAN_GUTS,
     ANIM_MAX,
 } Animations;
 

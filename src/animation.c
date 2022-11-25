@@ -68,9 +68,9 @@ const AnimationConfig animations[ANIM_MAX] = {
     (AnimationConfig){  // ANIM_CHECKPOINT
         .base_x = 0, .base_y = 64,
         .width = 40, .height = 24,
-        .frames = 1,
-        .dir = ANIMDIR_FORWARD,
-        .frame_time = 1.0 / 5.0,
+        .frames = 4,
+        .dir = ANIMDIR_PINGPONG,
+        .frame_time = 1.0 / 2.5,
     },
     (AnimationConfig){  // ANIM_FISHYMAN_MEGA
         .base_x = 0, .base_y = 88,
@@ -78,6 +78,13 @@ const AnimationConfig animations[ANIM_MAX] = {
         .frames = 8,
         .dir = ANIMDIR_FORWARD,
         .frame_time = 1.0 / 5.0,
+    },
+    (AnimationConfig){  // ANIM_FISHYMAN_GUTS
+        .base_x = 72, .base_y = 0,
+        .width = 8, .height = 8,
+        .frames = 4,
+        .dir = ANIMDIR_FORWARD,
+        .frame_time = INFINITY,
     }
 };
 

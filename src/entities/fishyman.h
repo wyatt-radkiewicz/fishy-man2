@@ -13,6 +13,9 @@ typedef struct FishyManData {
     Vector2 transition_movement_dir;
     float rotation;
     float bubble_timer;
+
+    float base_radius;
+    bool is_mega;
 } FishyManData;
 
 void fishyman_update(Entity *entity, float delta);

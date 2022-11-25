@@ -3,6 +3,8 @@
 #include "entity.h"
 #include "camera.h"
 
+#define DEATH_DURATION 1.0f
+
 typedef enum GameState {
     GAMESTATE_LEVEL,
     GAMESTATE_LEVEL_TRANSITION,
@@ -18,6 +20,7 @@ extern int last_level_uid_checkpoint;
 
 extern Texture2D entity_texture;
 extern Texture2D terrain_texture;
+extern Texture2D wipe_texture;
 
 void game_run(void);
 
