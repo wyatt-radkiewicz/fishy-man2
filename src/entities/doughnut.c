@@ -7,11 +7,18 @@
 #include "../world.h"
 
 static float doughnut_offset = 0.0f;
+static int doughnut_frame_offset = 0;
 
 void doughnut_update(Entity *entity, float delta) {
     DoughnutData *data = entity->custom_data;
     entity->position.y = data->original_y + sinf(data->timer * 3.0f);
     data->timer += delta;
+
+    if (!data->inited_frame) {
+        entity->animation.frame = doughnut_frame_offset;
+        doughnut_frame_offset += 1;
+        data->inited_frame = true;
+    }
 
     if (data->eaten) {
         data->eaten_timer += delta;
@@ -28,6 +35,7 @@ DoughnutData *doughnut_data_new(float y_pos) {
     data->original_y = y_pos;
     data->eaten_timer = 0.0f;
     data->timer = doughnut_offset;
+    data->inited_frame = false;
     doughnut_offset += 0.5f;
 }
 void doughnut_eat(Entity *doughnut) {

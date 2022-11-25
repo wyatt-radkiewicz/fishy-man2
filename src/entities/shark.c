@@ -55,16 +55,43 @@ void shark_update(Entity *entity, float delta) {
         entity->velocity.y = sinf(dir) * data->speed;
 
         if (!entity_lineofsight(entity, global_player)) {
-            data->state = SHARK_STATE_FOLLOW;
-            data->timer = 3.0f;
-            data->target = global_player->position;
+            data->seen_timer += delta;
+            if (data->seen_timer > 0.5f) {
+                data->state = SHARK_STATE_FOLLOW;
+                data->timer = 5.0f;
+                data->target = global_player->position;
+            }
+        } else {
+            data->seen_timer = 0.0f;
         }
         break;
         case SHARK_STATE_FOLLOW:
         data->timer -= delta;
         max_speed = Vector2Length((Vector2){ .x = data->max_chase_speed / 1.33f, .y = data->max_chase_speed / 1.33f });
         accel_to_point(entity, delta, data->target, data->max_chase_speed / 1.5f, data->max_chase_speed / 1.33f);
-        if (data->timer < 0.0f || Vector2Distance(entity->position, data->target) < entity->radius + 4.0f) {
+        
+        if (data->stationary_timer > 0.5f) {
+            float xdist = data->target.x - entity->position.x;
+            float ydist = data->target.y - entity->position.y;
+            float detecty = (entity->radius + 4.0f) * (ydist > 0.0f ? 1.0f : -1.0f);
+            float detectx = (entity->radius + 4.0f) * (xdist > 0.0f ? 1.0f : -1.0f);
+            if (fabsf(ydist) > fabsf(xdist) && world_point_colliding(Vector2Add(entity->position, (Vector2){ .x = 0.0f, .y = detecty }))) {
+                if (xdist > 0.0f) {
+                    entity->velocity.x -= data->max_chase_speed * 2.0f;
+                } else {
+                    entity->velocity.x += data->max_chase_speed * 2.0f;
+                }
+            } else if (fabsf(xdist) > fabsf(ydist) && world_point_colliding(Vector2Add(entity->position, (Vector2){ .x = detectx, .y = 0.0f }))) {
+                if (ydist > 0.0f) {
+                    entity->velocity.y -= data->max_chase_speed * 2.0f;
+                } else {
+                    entity->velocity.y += data->max_chase_speed * 2.0f;
+                }
+            }
+        }
+        
+        if (data->timer < 0.0f || Vector2Distance(entity->position, data->target) < entity->radius + 4.0f ||
+            data->stationary_timer > 2.0f) {
             data->state = SHARK_STATE_ROAM;
             data->home = entity->position;
             data->timer = 0.0f;
@@ -74,6 +101,12 @@ void shark_update(Entity *entity, float delta) {
             data->speed = -35.0f;
         }
         break;
+    }
+
+    if (Vector2Length(entity->velocity) < max_speed / 3.0f) {
+        data->stationary_timer += delta;
+    } else {
+        data->stationary_timer = 0.0f;
     }
 
     // Clip to bounds
@@ -112,5 +145,6 @@ SharkData *shark_data_new(Vector2 spawn_pos) {
     data->target = spawn_pos;
     data->state = SHARK_STATE_ROAM;
     data->rotation = 0.0f;
+    data->seen_timer = 0.0f;
     return data;
 }

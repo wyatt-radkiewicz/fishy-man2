@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "world.h"
 #include <raymath.h>
 
 void camera_new(GameCamera *camera, Vector2 max_dimen) {
@@ -29,4 +30,18 @@ Rectangle camera_transform_rect(GameCamera *camera, Rectangle rect) {
     rect.height = rect.height / camera->scale / camera->dimen.y * camera->window_height;
 
     return rect;
+}
+void camera_clip_to_level(GameCamera *camera) {
+    if (camera->position.x - camera->dimen.x * camera->scale / 2.0f < (float)current_level->worldX) {
+        camera->position.x = (float)current_level->worldX + camera->dimen.x * camera->scale / 2.0f;
+    }
+    if (camera->position.x + camera->dimen.x * camera->scale / 2.0f > (float)current_level->worldX + (float)current_level->pxWid) {
+        camera->position.x = (float)current_level->worldX + (float)current_level->pxWid - camera->dimen.x * camera->scale / 2.0f;
+    }
+    if (camera->position.y - camera->dimen.y * camera->scale / 2.0f < (float)current_level->worldY) {
+        camera->position.y = (float)current_level->worldY + camera->dimen.y * camera->scale / 2.0f;
+    }
+    if (camera->position.y + camera->dimen.y * camera->scale / 2.0f > (float)current_level->worldY + (float)current_level->pxHei) {
+        camera->position.y = (float)current_level->worldY + (float)current_level->pxHei - camera->dimen.y * camera->scale / 2.0f;
+    }
 }

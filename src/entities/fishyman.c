@@ -97,18 +97,19 @@ void fishyman_update(Entity *entity, float delta) {
 
     // Camera
     camera.position = Vector2Add(camera.position, Vector2Scale(Vector2Subtract(entity->position, camera.position), 25.0f * delta));
-    if (camera.position.x - camera.dimen.x * camera.scale / 2.0f < (float)current_level->worldX) {
-        camera.position.x = (float)current_level->worldX + camera.dimen.x * camera.scale / 2.0f;
+    camera_clip_to_level(&camera);
+
+    // Die if we are next to shark!!!
+    entity->radius = 4.0f;
+    Entity *enemies[32];
+    int num_enemies = game_find_colliding_entities(enemies, 32, entity, false);
+    for (int i = 0; i < num_enemies; i++) {
+        if (enemies[i]->original_preset == ENTITY_PRESET_SHARK ||
+            enemies[i]->original_preset == ENTITY_PRESET_GHOST_SHARK) {
+            start_death();
+        }
     }
-    if (camera.position.x + camera.dimen.x * camera.scale / 2.0f > (float)current_level->worldX + (float)current_level->pxWid) {
-        camera.position.x = (float)current_level->worldX + (float)current_level->pxWid - camera.dimen.x * camera.scale / 2.0f;
-    }
-    if (camera.position.y - camera.dimen.y * camera.scale / 2.0f < (float)current_level->worldY) {
-        camera.position.y = (float)current_level->worldY + camera.dimen.y * camera.scale / 2.0f;
-    }
-    if (camera.position.y + camera.dimen.y * camera.scale / 2.0f > (float)current_level->worldY + (float)current_level->pxHei) {
-        camera.position.y = (float)current_level->worldY + (float)current_level->pxHei - camera.dimen.y * camera.scale / 2.0f;
-    }
+    entity->radius = 3.0f;
 
     // Be level bound.
     entity_bound_to_level(entity, 0.0f);

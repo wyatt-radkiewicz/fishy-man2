@@ -13,6 +13,9 @@ Entity *global_player = NULL;
 size_t entity_capacity = 0;
 static int64_t current_entity = -1;
 static bool despawn_last_entity = false;
+static float death_timer = 0.0f;
+int death_state = 0;
+int last_level_uid_checkpoint = 0;
 GameCamera camera;
 
 Texture2D entity_texture;
@@ -23,7 +26,7 @@ static void unload_assets(void);
 static void entity_list_new(void);
 static void entity_list_drop(void);
 static void update_entities(void);
-static void draw_entities(bool priority);
+static void draw_entities(int priority);
 
 int main(int argc, char **argv) {
     InitWindow(500, 500, "Fishy Man 2");
@@ -34,21 +37,69 @@ int main(int argc, char **argv) {
     //camera_new(&camera, (Vector2){ 256.0f, 256.0f });// .x = 192.0f, .y = 128.0f });
     camera_new(&camera, (Vector2){ .x = 192.0f, .y = 128.0f });
     world_setup();
+    last_level_uid_checkpoint = current_level_uid;
     camera.position = global_player->position;
 
     while (!WindowShouldClose()) {
-        if (in_transition && transition_timer <= 0.0f) {
+        if (death_state > 0) {
+            death_timer -= GetFrameTime();
+        }
+        if (death_state == 1) {
+            if (death_timer <= 0.0f) {
+                death_state = 2;
+            }
+        } else if (death_state == 2) {
+            for (int i = 0; i < entity_capacity; i++) {
+                game_despawn_entity(entities[i]);
+            }
+            world_force_create_tiles_for_level(last_level_uid_checkpoint);
+            world_spawn_entities_for_level(last_level_uid_checkpoint);
+            camera.position = global_player->position;
+            camera_clip_to_level(&camera);
+
+            death_state = 3;
+        } else if (death_state == 3) {
+            if (death_timer <= -1.0f) {
+                death_state = 0;
+            }
+        } else if (in_transition && transition_timer <= 0.0f) {
             world_end_transition();
         }
-        update_entities();
+
+        if (death_state < 1) {
+            update_entities();
+        }
+
+        if (IsKeyPressed(KEY_SPACE)) {
+            start_death();
+        }
 
         BeginDrawing();
         ClearBackground((Color){ .r = 205, .g = 212, .b = 165, .a = 255 });
         camera_update(&camera, GetScreenWidth(), GetScreenHeight());
         world_draw_background();
-        draw_entities(false);
+        draw_entities(PRIORITY_LOW);
+        draw_entities(PRIORITY_MID);
         world_draw_foreground();
-        draw_entities(true);
+        draw_entities(PRIORITY_HI);
+
+        if (death_state > 0) {
+            float y = GetScreenHeight() - (int)(death_timer * 2.0f * (float)GetScreenHeight());
+
+            DrawRectangleGradientV(
+                0, y, GetScreenWidth(), GetScreenHeight(),
+                (Color){ .r = 33, .g = 29, .b = 56, .a = 255 },
+                (Color){ .r = 33, .g = 29, .b = 56, .a = 0 }
+            );
+            DrawRectangle(0.0f, y - GetScreenHeight(), GetScreenWidth(), GetScreenHeight(),
+                (Color){ .r = 33, .g = 29, .b = 56, .a = 255 });
+            DrawRectangleGradientV(
+                0, y - GetScreenHeight() * 2, GetScreenWidth(), GetScreenHeight(),
+                (Color){ .r = 33, .g = 29, .b = 56, .a = 0 },
+                (Color){ .r = 33, .g = 29, .b = 56, .a = 255 }
+            );
+        }
+        
         EndDrawing();
     }
 
@@ -56,6 +107,12 @@ int main(int argc, char **argv) {
     world_free();
     unload_assets();
     CloseWindow();
+}
+void start_death(void) {
+    if (!death_state) {
+        death_state = 1;
+        death_timer = 1.0f;
+    }
 }
 
 Entity *game_spawn_entity(EntityPreset preset, Vector2 pos) {
@@ -82,7 +139,7 @@ Entity *game_spawn_entity(EntityPreset preset, Vector2 pos) {
 }
 void game_despawn_entity(Entity *entity) {
     for (int i = 0; i < entity_capacity; i++) {
-        if (entities[i] == entity) {
+        if (entities[i] == entity && entity) {
             if (i != current_entity) {
                 entities[i] = NULL;
                 entity_drop(entity);
@@ -160,7 +217,7 @@ static void update_entities(void) {
 
     current_entity = -1;
 }
-static void draw_entities(bool priority) {
+static void draw_entities(int priority) {
     for (int i = 0; i < entity_capacity; i++) {
         if (entities[i] && entities[i]->priority == priority) {
             entity_draw(entities[i]);

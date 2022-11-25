@@ -14,5 +14,6 @@ typedef struct GameCamera {
 void camera_new(GameCamera *camera, Vector2 max_dimen);
 void camera_update(GameCamera *camera, int window_width, int window_height);
 Rectangle camera_transform_rect(GameCamera *camera, Rectangle rect);
+void camera_clip_to_level(GameCamera *camera);
 
 #endif

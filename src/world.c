@@ -82,6 +82,17 @@ void world_start_transition(int levelUid) {
         world_spawn_entities_for_level(transition_level_uid);
     }
 }
+void world_force_create_tiles_for_level(int levelUid) {
+    last_level_id = current_level_uid = transition_level_uid = -1;
+    transition_level = NULL;
+    current_level_uid = levelUid;
+    current_level = getLevelFromUid(current_level_uid);
+    current_intGrid = getLayer("Collisions", current_level_uid);
+    current_level_num = world_get_level_num(current_level);
+    free_collisions();
+    build_collisions();
+    lock_anim = 0.0f;
+}
 void world_end_transition(void) {
     in_transition = false;
     last_level_id = current_level_uid;
@@ -157,7 +168,7 @@ void world_spawn_entities_for_level(int levelUid) {
     for (int i = 0; i < layer->numEntityInstancesDataPtr; i++) {
         EntityPreset preset = entity_preset_from_identifier(ents[i].identifier);
         if (preset == ENTITY_PRESET_FISHYMAN && game_find_next_entity_of_preset(entities, ENTITY_PRESET_FISHYMAN)) {
-            break;
+            continue;
         }
 
         if (preset == ENTITY_PRESET_DOUGHNUT) {
@@ -260,6 +271,11 @@ static void build_collisions(void) {
     }
 }
 
+bool world_point_colliding(Vector2 pt) {
+    int col;
+    world_get_bound_from_grid((int)pt.x, (int)pt.y, &col);
+    return col & IS_SOLID;
+}
 static Rectangle world_get_bound_from_grid(int px, int py, int *col) {
     int localx = (px - current_level->worldX) / 8;
     int localy = (py - current_level->worldY) / 8;

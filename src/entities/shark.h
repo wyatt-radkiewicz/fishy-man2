@@ -19,6 +19,7 @@ typedef struct SharkData {
     float rotation;
     float speed;
     float seen_timer;
+    float stationary_timer;
     SharkState state;
 } SharkData;
 

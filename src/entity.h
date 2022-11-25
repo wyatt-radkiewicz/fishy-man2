@@ -5,6 +5,10 @@
 
 #include "animation.h"
 
+#define PRIORITY_LOW 0
+#define PRIORITY_MID 1
+#define PRIORITY_HI 2
+
 typedef enum EntityPreset {
     ENTITY_PRESET_UNKOWN_IDENTIFIER,
     ENTITY_PRESET_FISHYMAN,
@@ -33,7 +37,7 @@ struct Entity {
     bool collide_with_others;
     bool free_custom_data;
     bool flipx, flipy;
-    bool priority;
+    int priority;
 
     Color tint;
     EntityPreset original_preset;

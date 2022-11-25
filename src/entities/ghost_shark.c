@@ -23,6 +23,6 @@ void ghost_shark_update(Entity *entity, float delta) {
 
 GhostSharkData *ghost_shark_data_new(void) {
     GhostSharkData *data = malloc(sizeof(GhostSharkData));
-    data->max_speed = 50.0f;
+    data->max_speed = 42.0f;
     data->speed = 0.0f;
 }

@@ -12,6 +12,7 @@
 #include "entities/doughnut.h"
 #include "entities/shark.h"
 #include "entities/ghost_shark.h"
+#include "entities/checkpoint.h"
 
 static const char *ident_to_preset[ENTITY_PRESET_MAX] = {
     "ENTITY_PRESET_UNKOWN_IDENTIFIER",
@@ -47,20 +48,25 @@ Entity *entity_preset(EntityPreset preset, Vector2 pos) {
         entity_new(entity, bubble_update, pos, (rand() & 4) ? ANIM_BUBBLE : ANIM_BUBBLE_SMALL, 0.0f, false, NULL, true);
         entity->tint.a = 0;
         entity->scale = 0.0f;
-        entity->priority = true;
+        entity->priority = PRIORITY_HI;
         break;
         case ENTITY_PRESET_BUBBLE_SPAWNER:
         entity_new(entity, bubble_spawner_update, pos, ANIM_NONE, 0.0f, false, bubble_spawner_data_new(), true);
         break;
         case ENTITY_PRESET_DOUGHNUT:
         entity_new(entity, doughnut_update, pos, ANIM_DOUGHNUT, 4.0f, false, doughnut_data_new(pos.y), true);
+        entity->priority = PRIORITY_HI;
         break;
         case ENTITY_PRESET_SHARK:
-        entity_new(entity, shark_update, pos, ANIM_SHARK, 7.0f, true, shark_data_new(pos), true);
+        entity_new(entity, shark_update, pos, ANIM_SHARK, 5.0f, true, shark_data_new(pos), true);
         break;
         case ENTITY_PRESET_GHOST_SHARK:
-        entity_new(entity, ghost_shark_update, pos, ANIM_SHARK_GHOST, 7.0f, true, ghost_shark_data_new(), true);
-        entity->priority = true;
+        entity_new(entity, ghost_shark_update, pos, ANIM_SHARK_GHOST, 5.0f, true, ghost_shark_data_new(), true);
+        entity->priority = PRIORITY_HI;
+        break;
+        case ENTITY_PRESET_CHECKPOINT:
+        entity_new(entity, checkpoint_update, pos, ANIM_CHECKPOINT, 16.0f, false, NULL, false);
+        entity->priority = PRIORITY_LOW;
         break;
         default:
         entity_new(entity, NULL, pos, ANIM_NONE, 0.0f, false, NULL, false);
@@ -87,7 +93,7 @@ void entity_new(Entity *entity, EntityUpdateFunc func, Vector2 pos, Animations a
     entity->original_preset = ENTITY_PRESET_UNKOWN_IDENTIFIER;
     entity->level_uid = -1;
     entity->tint = WHITE;
-    entity->priority = false;
+    entity->priority = PRIORITY_MID;
 }
 void entity_drop(Entity *entity) {
     if (entity->free_custom_data && entity->custom_data) {
