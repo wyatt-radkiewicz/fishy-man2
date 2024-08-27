@@ -22,6 +22,9 @@ extern Texture2D entity_texture;
 extern Texture2D terrain_texture;
 extern Texture2D wipe_texture;
 
+void DrawTextureTiled(Texture2D texture, Rectangle source, Rectangle dest,
+                      Vector2 origin, float rotation, float scale, Color tint);
+
 void game_run(void);
 
 Entity *game_spawn_entity(EntityPreset preset, Vector2 pos);

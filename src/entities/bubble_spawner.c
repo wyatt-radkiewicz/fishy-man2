@@ -26,4 +26,5 @@ void bubble_spawner_update(Entity *entity, float delta) {
 BubbleSpawnerData *bubble_spawner_data_new(void) {
     BubbleSpawnerData *data = calloc(1, sizeof(BubbleSpawnerData));
     data->timeleft = 1.0f;
+    return data;
 }

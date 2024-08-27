@@ -59,4 +59,5 @@ BubbleData *bubble_data_new(
     data->accel = -(16.0f * rand_accel + 8.0f);
     data->time_left = data->lifetime;
     data->decel = decel;
+    return data;
 }

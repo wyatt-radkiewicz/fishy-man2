@@ -47,7 +47,9 @@ struct Entity {
 
 EntityPreset entity_preset_from_identifier(const char *ident);
 Entity *entity_preset(EntityPreset preset, Vector2 pos);
-void entity_new(Entity *entity, EntityUpdateFunc func, Vector2 pos, Animations anim_config, float radius, bool collide_with_others, void *custom_data, bool free_data);
+void entity_new(Entity *entity, EntityUpdateFunc func, Vector2 pos,
+                Animations anim_config, float radius, bool collide_with_others,
+                void *custom_data, bool free_data);
 void entity_drop(Entity *entity);
 void entity_update(Entity *entity, float delta);
 void entity_draw(Entity *entity);

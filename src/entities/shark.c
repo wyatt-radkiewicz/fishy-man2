@@ -24,7 +24,7 @@ void accel_to_point(Entity *entity, float delta, Vector2 target, float accel, fl
 
 void shark_update(Entity *entity, float delta) {
     SharkData *data = entity->custom_data;
-    float max_speed = 8.0f;
+    float max_speed = 7.0f;
 
     switch (data->state) {
         case SHARK_STATE_ROAM:

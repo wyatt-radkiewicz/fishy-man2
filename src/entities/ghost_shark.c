@@ -25,4 +25,5 @@ GhostSharkData *ghost_shark_data_new(void) {
     GhostSharkData *data = malloc(sizeof(GhostSharkData));
     data->max_speed = 42.0f;
     data->speed = 0.0f;
+    return data;
 }

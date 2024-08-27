@@ -11,7 +11,7 @@
 #include "../world.h"
 
 #define SPEED_MULTIPLIER 2.0f
-#define MAX_SPEED (8.0f * 4.0f * SPEED_MULTIPLIER)
+#define MAX_SPEED (8.0f * 4.0f * SPEED_MULTIPLIER * 1.25f)
 
 static void try_transition(Entity *entity, bool vertical, float dir);
 
